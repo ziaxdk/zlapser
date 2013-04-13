@@ -16,12 +16,12 @@ npm start
 
 
 # Raspberry Pi
+## Raspbian “wheezy”
+### Initial setup
 First thing to do after creating the wheezy SD card, is to assign a static IP adress
-
 ```shell
-sudo nano /etc/network/interfaces
+$ sudo nano /etc/network/interfaces
 ```
-
 Change to this
 
 ```text
@@ -32,12 +32,13 @@ netmask 255.255.255.128 	# network
 gateway 10.10.10.1 			# gateway. Your router typically
 nameserver 10.10.10.1 		# DNS. Use can use: 8.8.8.8 and 4.4.2.2
 ```
+Update the package manger
+```shell
+$ sudo apt-get update
+$ sudo apt-get upgrade		# This can take a while.
+```
 And then reboot
 ```shell
-sudo reboot
+$ sudo reboot
 ```
-
-
-
-sudo apt-get update
-sudo apt-get upgrade
+### NodeJs
