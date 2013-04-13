@@ -20,7 +20,7 @@ First thing to do after creating the wheezy SD card, is to assign a static IP ad
 
 ```shell
 sudo nano /etc/network/interfaces
-´´´
+```
 
 Change to this
 
@@ -31,11 +31,11 @@ address 10.10.10.23 		# ip address
 netmask 255.255.255.128 	# network
 gateway 10.10.10.1 			# gateway. Your router typically
 nameserver 10.10.10.1 		# DNS. Use can use: 8.8.8.8 and 4.4.2.2
-´´´
+```
 And then reboot
-````shell
+```shell
 sudo reboot
-´´´
+```
 
 
 
