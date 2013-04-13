@@ -18,7 +18,13 @@ npm start
 # Raspberry Pi
 ## Raspbian “wheezy”
 ### Initial setup
-First thing to do after creating the wheezy SD card, is to assign a static IP adress
+When the SD card has been creted, I configured the PI using
+```shell
+$ sudo raspi-config
+```
+I set up the keyboard layout, enabled the SSH and set mempry split to 16MB.
+
+### Static IP address of wired (eth0)
 ```shell
 $ sudo nano /etc/network/interfaces
 ```
@@ -42,3 +48,4 @@ And then reboot
 $ sudo reboot
 ```
 ### NodeJs
+You can look for the latest version [here](http://nodejs.org/dist). Look for the newest version (ex. v0.10.2), and grab the [node-v0.10.2-linux-arm-pi.tar.gz](http://nodejs.org/dist/v0.10.2/node-v0.10.2-linux-arm-pi.tar.gz)
