@@ -16,16 +16,7 @@ npm start
 
 
 # Raspberry Pi
-```shell
-$ sudo apt-get install hostapd udhcpd
-$ reboot
-$ sudo /etc/network/interfaces
-´´´
-
-sudo bash
-apt-get install hostapd udhcpd
-
-First thing is to assign a static IP adress
+First thing to do after creating the wheezy SD card, is to assign a static IP adress
 ```shell
 sudo nano /etc/network/interfaces
 ´´´
