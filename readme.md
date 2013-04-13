@@ -17,9 +17,11 @@ npm start
 
 # Raspberry Pi
 First thing to do after creating the wheezy SD card, is to assign a static IP adress
+
 ```shell
 sudo nano /etc/network/interfaces
 ´´´
+
 Change to this
 
 ```text
