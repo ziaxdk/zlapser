@@ -3,7 +3,7 @@ angular.module('app', [], function ($routeProvider) {
         templateUrl: "html.tmpl"
     });
     $routeProvider.when('/about', {
-        templateUrl: "about2.tmpl"
+        templateUrl: "readme.md"
     });
     $routeProvider.when('/start', {
         templateUrl: "start.tmpl"
@@ -22,10 +22,8 @@ angular.module('app', [], function ($routeProvider) {
 }).run([
     "$rootScope", 
     "$location", 
-    "$templateCache", 
-    "$http", 
     "SetupModel", 
-    function ($rootScope, $location, $templateCache, $http, model) {
+    function ($rootScope, $location, model) {
         $rootScope.go = function (url) {
             $location.path(url);
         };
@@ -45,9 +43,6 @@ angular.module('app', [], function ($routeProvider) {
             if(!$rootScope.$$phase) {
                 $rootScope.$apply();
             }
-        });
-        $http.get("/info.md").success(function (res) {
-            $templateCache.put("about2.tmpl", res);
         });
         $('body').popover({
             selector: '[data-toggle="popover"]'

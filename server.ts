@@ -4,8 +4,7 @@ var express = require('express')
     , http = require('http')
     , proc = require('child_process')
     , moment = require('moment')
-    , showdown = require('showdown')
-    , md = showdown.converter()
+    , pagedown = require('pagedown')
     , fs = require('fs')
 
     ;
@@ -51,7 +50,7 @@ var model = (() => {
             job.time.elapsed = moment().diff(job.time.start);
             console.log("Set high");
 
-            setTimeout(()=>{
+            setTimeout(()=> {
                 console.log("Set low");
             }, 5);
         }, job.interval);
@@ -72,9 +71,9 @@ var model = (() => {
         res.send("ok");
     };
 
-    var snap = (req, res) =>{
+    var snap = (req, res) => {
         var o = req.body;
-        if (o.sandbox){
+        if (o.sandbox) {
             res.send(true)
             return;
         }
@@ -112,14 +111,14 @@ app.post("/pause", model.pause);
 app.post("/resume", model.pause);
 app.post("/snap", model.snap);
 app.put("/shutdown", model.shutdown);
-app.get("/info.md", (req, res)=>{
+app.get("/readme.md", (req, res)=> {
 
-    fs.readFile(__dirname + '\\readme.md', function (err, data) {
-        if (err) throw err;
-        console.log(showdown.makeHtml(data));
-        res.send(data);
-
-        //res.send(showdown.makeHtml(data));
+    fs.readFile(__dirname + '\\readme.md','utf8', function (err, data) {
+        if (err) {
+            res.send("<p>Error getting readme.md</p>");
+        }
+        var converter = new pagedown.Converter();
+        res.send(converter.makeHtml(data));
     });
 });
 
@@ -131,4 +130,4 @@ io.sockets.on('connection', (socket) => {
 
 app.use(express.static(__dirname + "/src"));
 theServer.listen(8080);
-console.log(md, showdown,"Up and running on http://localhost:8080... :-)");
+console.log("Up and running on http://localhost:8080... :-)");
