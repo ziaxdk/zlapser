@@ -5,11 +5,11 @@
 # Raspberry Pi
 ## Raspbian “wheezy”
 ### Initial setup
-When the [SD card](http://elinux.org/RPi_Easy_SD_Card_Setup) has been creted, I configured the PI using
+When the [SD card](http://elinux.org/RPi_Easy_SD_Card_Setup) has been creted, configure the PI using
 
     $ sudo raspi-config
 
-I set up the keyboard layout, enabled the SSH and set mempry split to 16MB.
+I set up the keyboard layout, enabled the SSH and set memory split to 16MB.
 
 ### Static IP address of wired (eth0)
 
@@ -64,7 +64,9 @@ You should see a message, that server is running. Cancel anytime with twice "ctr
 
 ### Configure network wireless
 
-Wiresless networks can be configured in many ways, for example access point or ad-hoc network. To getting access point to work, you must ensure that your wifi dongle supports the "nl80211", which hostapd is using. 
+Wireless networks can be configured in many ways, for example access point or ad-hoc network. To getting access point to work, you must ensure that your wifi dongle supports the ["nl80211"](http://wireless.kernel.org/en/developers/Documentation/nl80211), which hostap daemon is using. 
+
+#### Ad-hoc configuration
 
 I have a Sempre WU300-2 wifi dongle, which will be configured as an ad-hoc network to connect to the zlapser web.
 
@@ -87,7 +89,7 @@ And bring adapter up
 	$ sudo /etc/init.d/networking reload
 	$ sudo ifup wlan0
 
-A blue diode started to flash om the adapter, and you should be able to connect with an iPad or something that supports ad-hoc netowkr (not Android on stock rom). You'll need to root the device), and use settings like this:
+A blue diode started to flash om the adapter, and you should be able to connect with an iPad or something that supports ad-hoc network (not Android on stock rom). You'll need to root the device), and use settings like this:
 
 	IP: 10.10.10.131
 	Netmask: 255.255.255.128
@@ -102,3 +104,5 @@ Go to your user agent (Chrome), and type: [http://10.10.10.130](http://10.10.10.
 To kill the node daemon:
 
 	$ sudo killall node
+
+#### Access point configuration
