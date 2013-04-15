@@ -67,7 +67,7 @@ var model = (() => {
     };
 
     var shutdown = (req, res) => {
-        proc.exec("shutdown -h now");
+        //proc.exec("shutdown -h now");
         res.send("ok");
     };
 

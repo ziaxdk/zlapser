@@ -54,7 +54,6 @@ var model = (function () {
         io.sockets.emit('zlapser-status', job);
     };
     var shutdown = function (req, res) {
-        proc.exec("shutdown -h now");
         res.send("ok");
     };
     var snap = function (req, res) {

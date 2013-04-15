@@ -111,7 +111,9 @@
 
         <p><a ng-click="go('start')" class="btn btn-primary btn-large">Click to start &raquo;</a></p>
 
-        <p><a ng-click="go('about')" class="btn btn-primary btn-large">More info</a></p>
+        <p class="text-center">
+            <a ng-click="go('about')" class="btn btn-link">
+                Click for readme.md</a></p>
     </div>
 </script>
 
@@ -163,6 +165,13 @@
     <h1>Step 2 of </h1>
 
     <a href="javascript:;" ng-click="startJob()">Press here</a> to start...
+</script>
+
+<script type="text/ng-template" id="bye.tmpl">
+    <h1>Shutting down</h1>
+
+    <p>Bye</p>
+
 </script>
 
 <script type="text/ng-template" id="running.tmpl">

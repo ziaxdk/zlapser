@@ -5,6 +5,9 @@ angular.module('app', [], function ($routeProvider:ng.IRouteProvider) {
     $routeProvider.when('/about', {
         templateUrl: "readme.md"
     });
+    $routeProvider.when('/bye', {
+        templateUrl: "bye.tmpl"
+    });
     $routeProvider.when('/start', {
         templateUrl: "start.tmpl"
     });
@@ -71,7 +74,10 @@ angular.module('app', [], function ($routeProvider:ng.IRouteProvider) {
     }])
     .controller("shutdownmodal", ["$scope", "$http", ($scope, $http)=> {
         $scope.fireDown = () => {
-            $http.put("/shutdown");
+            $http.put("/shutdown").success(()=> {
+                $('#shutdownmodel').modal('hide')
+                $scope.go("bye");
+            });
         };
     }])
     .service("SetupModel", [()=> {
