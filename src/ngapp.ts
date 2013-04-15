@@ -2,6 +2,9 @@ angular.module('app', [], function ($routeProvider:ng.IRouteProvider) {
     $routeProvider.when('/', {
         templateUrl: "html.tmpl"
     });
+    $routeProvider.when('/about', {
+        templateUrl: "about2.tmpl"
+    });
     $routeProvider.when('/start', {
         templateUrl: "start.tmpl"
     });
@@ -17,18 +20,19 @@ angular.module('app', [], function ($routeProvider:ng.IRouteProvider) {
         redirectTo: "/"
     });
 })
-    .run(["$rootScope", "$location", "SetupModel", ($rootScope:INgAppRootScope, $location:ng.ILocationService, model: ISetupModel)=> {
+    .run(["$rootScope", "$location", "$templateCache", "$http", "SetupModel", ($rootScope:INgAppRootScope, $location:ng.ILocationService, $templateCache:ng.ITemplateCacheService, $http:ng.IHttpService, model:ISetupModel)=> {
         $rootScope.go = function (url) {
             $location.path(url);
         };
+
 
         $rootScope.job = {
         };
 
         $rootScope.model = model;
 
-        $rootScope.toggleSandbox = () =>{
-          model.sandbox = !model.sandbox;
+        $rootScope.toggleSandbox = () => {
+            model.sandbox = !model.sandbox;
         };
         var socket = io.connect('http://localhost');
 
@@ -39,6 +43,10 @@ angular.module('app', [], function ($routeProvider:ng.IRouteProvider) {
                 $rootScope.go("running");
             if (!$rootScope.$$phase)
                 $rootScope.$apply();
+        });
+
+        $http.get("/info.md").success((res) => {
+            $templateCache.put("about2.tmpl", res);
         });
 
         $('body').popover({ selector: '[data-toggle="popover"]' });

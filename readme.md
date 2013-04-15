@@ -5,7 +5,7 @@
 # Raspberry Pi
 ## Raspbian “wheezy”
 ### Initial setup
-When the SD card has been creted, I configured the PI using
+When the [SD card](http://elinux.org/RPi_Easy_SD_Card_Setup) has been creted, I configured the PI using
 ```shell
 $ sudo raspi-config
 ```
@@ -31,9 +31,6 @@ $ sudo apt-get update
 $ sudo apt-get upgrade		# This can take a while.
 $ sudo apt-get clean
 $ sudo usermod -aG staff pi
-```
-And then reboot
-```shell
 $ sudo reboot
 ```
 ### NodeJs
@@ -59,12 +56,49 @@ $ npm -v 					# v1.2.15
 ```shell
 $ wget ... (TODO)
 $ unzip .. (TODO)
-$ npm Install 				# install dependencies to zlapser 
-$ npm start 				# run (or you node server.js)
+$ cd ...
+$ npm install 				# install node dependencies to zlapser 
+$ sudo npm start 			# run (or you "sudo node server.js")
 ```
-You should see a message, that server is running. Cancel at ctrl+c
+You should see a message, that server is running. Cancel anytime with twice "ctrl+c"
 ### Configure network wireless
 Wiresless networks can be configured in many ways, for example access point or ad-hoc network. To getting access point to work, you must ensure that your wifi dongle supports the "nl80211", which hostapd is using. 
 
 I have a Sempre WU300-2 wifi dongle, which will be configured as an ad-hoc network to connect to the zlapser web.
 
+```shell
+$ sudo ifconfig wlan0 down
+$ sudo nano /etc/network/interfaces
+```
+Comment wlan0 out and add this
+```text
+iface wlan0 inet static 	# wlan0 is adapter. Could be ath0, I guess..
+address 10.10.10.130 		# ip address
+netmask 255.255.255.128		# network
+wireless-mode ad-hoc 		# configure as ad-hoc
+wireless-channel 5 			# channel
+wireless-essid zlapser-pi 	# ssid
+auto wlan0
+```
+And bring adapter up
+```shell
+$ sudo /etc/init.d/networking reload
+$ sudo ifup wlan0
+```
+A blue diode started to flash om the adapter, and you should be able to connect with an iPad or something that supports ad-hoc netowkr (not Android on stock rom). You'll need to root the device), and use settings like this:
+
+```text
+IP: 10.10.10.131
+Netmask: 255.255.255.131
+Gateway: 1.1.1.1
+```
+Start the zlapser node website with:
+```shell
+$ sudo npm start & 			# sudo because of writing to the GPIO port, and "&" to run as daemon
+```
+Go to your user agent (Chrome), and type: [http:/10.10.10.130](http:/10.10.10.130), and you should see the zlapser site. :-)
+
+To kill the node daemon:
+```shell
+$ sudo killall node
+```

@@ -4,23 +4,16 @@ var express = require('express')
     , http = require('http')
     , proc = require('child_process')
     , moment = require('moment')
+    , showdown = require('showdown')
+    , md = showdown.converter()
+    , fs = require('fs')
+
     ;
 
 
 var model = (() => {
     "use strict";
     var settings = {};
-
-    var pins = [
-        { interval: 0, delay: 0 },
-        { interval: 0, delay: 0 },
-        { interval: 0, delay: 0 },
-        { interval: 0, delay: 0 },
-        { interval: 0, delay: 0 },
-        { interval: 0, delay: 0 },
-        { interval: 0, delay: 0 },
-        { interval: 0, delay: 0 }
-    ];
 
     var jobId = null;
     var job = {
@@ -119,6 +112,16 @@ app.post("/pause", model.pause);
 app.post("/resume", model.pause);
 app.post("/snap", model.snap);
 app.put("/shutdown", model.shutdown);
+app.get("/info.md", (req, res)=>{
+
+    fs.readFile(__dirname + '\\readme.md', function (err, data) {
+        if (err) throw err;
+        console.log(showdown.makeHtml(data));
+        res.send(data);
+
+        //res.send(showdown.makeHtml(data));
+    });
+});
 
 io.enable('browser client minification');
 io.sockets.on('connection', (socket) => {
@@ -126,6 +129,6 @@ io.sockets.on('connection', (socket) => {
 });
 
 
-app.use(express.static(__dirname));
+app.use(express.static(__dirname + "/src"));
 theServer.listen(8080);
-console.log("Up and running... :-)");
+console.log(md, showdown,"Up and running on http://localhost:8080... :-)");
