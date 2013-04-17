@@ -90,5 +90,11 @@ angular.module('app', [], function ($routeProvider:ng.IRouteProvider) {
             sandbox: true
         };
     }])
+    .filter("EnableDisable", ()=> {
+        return (input)=> {
+            return !!input ? "Enable" : "Disable";
+
+        };
+    })
 ;
 

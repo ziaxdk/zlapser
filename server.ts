@@ -6,7 +6,7 @@ var express = require('express')
     , moment = require('moment')
     , pagedown = require('pagedown')
     , fs = require('fs')
-
+    , gpio = require('rpi-gpio')
     ;
 
 
@@ -42,18 +42,23 @@ var model = (() => {
     var start = (req, res) => {
         if (jobId !== null) return;
         setupJob();
-        jobId = setInterval(function () {
-            io.sockets.emit('zlapser-status', job);
-            if (job.numOfTotalFrames <= job.currentFrame) stop(null, null);
-            job.currentFrame++;
-            job.percent = Math.floor((job.currentFrame / job.numOfTotalFrames) * 100);
-            job.time.elapsed = moment().diff(job.time.start);
-            console.log("Set high");
 
-            setTimeout(()=> {
-                console.log("Set low");
-            }, 5);
-        }, job.interval);
+        gpio.setup(settings.pin, gpio.DIR_OUT, ()=> {
+            jobId = setInterval(function () {
+                io.sockets.emit('zlapser-status', job);
+                if (job.numOfTotalFrames <= job.currentFrame) stop(null, null);
+                job.currentFrame++;
+                job.percent = Math.floor((job.currentFrame / job.numOfTotalFrames) * 100);
+                job.time.elapsed = moment().diff(job.time.start);
+
+                gpio.write(settings.pin, 1, ()=> {
+                });
+                setTimeout(()=> {
+                    gpio.write(settings.pin, 0, ()=> {
+                    });
+                }, 100);
+            }, job.interval);
+        });
         res.send("ok");
     };
 
@@ -63,11 +68,14 @@ var model = (() => {
         jobId = null;
         job.isRunning = false;
         io.sockets.emit('zlapser-status', job);
+        gpio.destroy();
         //io.sockets.emit('zlapser-running', false);
     };
 
     var shutdown = (req, res) => {
-        //proc.exec("shutdown -h now");
+        proc.exec("shutdown -h now", ()=> {
+        }, ()=> {
+        });
         res.send("ok");
     };
 
@@ -113,7 +121,7 @@ app.post("/snap", model.snap);
 app.put("/shutdown", model.shutdown);
 app.get("/readme.md", (req, res)=> {
 
-    fs.readFile(__dirname + '\\readme.md','utf8', function (err, data) {
+    fs.readFile(__dirname + '/readme.md', 'utf8', function (err, data) {
         if (err) {
             res.send("<p>Error getting readme.md</p>");
         }

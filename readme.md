@@ -4,7 +4,7 @@
 
 # Camera - Canon 20D
 
-My camera is an oldie: [Canon 20D](http://www.dpreview.com/reviews/canoneos20d). But the remote shutter is not so common. Look [here](http://www.doc-diy.net/photo/remote_pinout/#canon), but I found a cheap remote shutter at dealextreme.com. I bought [this](http://dx.com/p/rs-80n3-remote-shutter-switch-for-canon-dslr-camera-118865) and [this](http://dx.com/p/wired-remote-shutter-for-canon-109cm-length-72104). Both tested on the 20D.
+My camera is an oldie: [Canon 20D](http://www.dpreview.com/reviews/canoneos20d). But the remote shutter is not so common. Look [here](http://www.doc-diy.net/photo/remote_pinout/#canon), but I found a cheap remote shutter at dealextreme.com. I bought [this](http://dx.com/p/rs-80n3-remote-shutter-switch-for-canon-dslr-camera-118865) and [this](http://dx.com/p/wired-remote-shutter-for-canon-109cm-length-72104). Both tested ok on the 20D.
 
 # Raspberry Pi
 ## Raspbian “wheezy”

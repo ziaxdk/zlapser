@@ -1,4 +1,4 @@
-var express = require('express'), http = require('http'), proc = require('child_process'), moment = require('moment'), pagedown = require('pagedown'), fs = require('fs');
+var express = require('express'), http = require('http'), proc = require('child_process'), moment = require('moment'), pagedown = require('pagedown'), fs = require('fs'), gpio = require('rpi-gpio');
 var model = (function () {
     "use strict";
     var settings = {
@@ -29,19 +29,23 @@ var model = (function () {
             return;
         }
         setupJob();
-        jobId = setInterval(function () {
-            io.sockets.emit('zlapser-status', job);
-            if(job.numOfTotalFrames <= job.currentFrame) {
-                stop(null, null);
-            }
-            job.currentFrame++;
-            job.percent = Math.floor((job.currentFrame / job.numOfTotalFrames) * 100);
-            job.time.elapsed = moment().diff(job.time.start);
-            console.log("Set high");
-            setTimeout(function () {
-                console.log("Set low");
-            }, 5);
-        }, job.interval);
+        gpio.setup(settings.pin, gpio.DIR_OUT, function () {
+            jobId = setInterval(function () {
+                io.sockets.emit('zlapser-status', job);
+                if(job.numOfTotalFrames <= job.currentFrame) {
+                    stop(null, null);
+                }
+                job.currentFrame++;
+                job.percent = Math.floor((job.currentFrame / job.numOfTotalFrames) * 100);
+                job.time.elapsed = moment().diff(job.time.start);
+                gpio.write(settings.pin, 1, function () {
+                });
+                setTimeout(function () {
+                    gpio.write(settings.pin, 0, function () {
+                    });
+                }, 100);
+            }, job.interval);
+        });
         res.send("ok");
     };
     var stop = function (req, res) {
@@ -52,8 +56,12 @@ var model = (function () {
         jobId = null;
         job.isRunning = false;
         io.sockets.emit('zlapser-status', job);
+        gpio.destroy();
     };
     var shutdown = function (req, res) {
+        proc.exec("shutdown -h now", function () {
+        }, function () {
+        });
         res.send("ok");
     };
     var snap = function (req, res) {
@@ -90,7 +98,7 @@ app.post("/resume", model.pause);
 app.post("/snap", model.snap);
 app.put("/shutdown", model.shutdown);
 app.get("/readme.md", function (req, res) {
-    fs.readFile(__dirname + '\\readme.md', 'utf8', function (err, data) {
+    fs.readFile(__dirname + '/readme.md', 'utf8', function (err, data) {
         if(err) {
             res.send("<p>Error getting readme.md</p>");
         }

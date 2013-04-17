@@ -101,5 +101,9 @@ angular.module('app', [], function ($routeProvider) {
             pin: 4,
             sandbox: true
         };
-    }]);
+    }]).filter("EnableDisable", function () {
+    return function (input) {
+        return !!input ? "Enable" : "Disable";
+    }
+});
 //@ sourceMappingURL=ngapp.js.map
