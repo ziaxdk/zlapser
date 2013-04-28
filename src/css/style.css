@@ -1,0 +1,35 @@
+body {
+    padding-top: 60px;
+    padding-bottom: 40px;
+}
+.anone, .anone:hover, .anone:focus {
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.view-enter-setup, .view-leave-setup, .slide-enter-setup, .slide-leave-setup, .wave-enter-setup, .wave-leave-setup {
+    -webkit-transition: all linear 1s;
+    -moz-transition: all linear 1s;
+    -o-transition: all linear 1s;
+    transition: all linear 1s;
+}
+
+.view-enter-setup {
+    opacity: 0;
+}
+
+.view-enter-setup.view-enter-start {
+    opacity: 1;
+}
+
+.view-leave-setup {
+    opacity: 1;
+}
+
+.view-leave-setup.view-leave-start {
+    opacity: 0;
+}
+
+/*[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+    display: none;
+}*/

@@ -9,13 +9,13 @@ var express = require('express')
     , gpio = require('rpi-gpio')
     ;
 
-
 var model = (() => {
     "use strict";
     var settings = {};
 
     var jobId = null;
     var job = {
+        isPi: false,
         isRunning: false,
         percent: 0,
         numOfTotalFrames: 0,
@@ -34,58 +34,68 @@ var model = (() => {
         job.isRunning = true;
         job.time.start = moment();
         job.time.end = job.time.start.clone().add('seconds', 60);
-
-        console.log(job);
-
     };
 
     var start = (req, res) => {
-        if (jobId !== null) return;
-        setupJob();
+        if (jobId === null && job.isPi) {
+            setupJob();
 
-        gpio.setup(settings.pin, gpio.DIR_OUT, ()=> {
-            jobId = setInterval(function () {
-                io.sockets.emit('zlapser-status', job);
-                if (job.numOfTotalFrames <= job.currentFrame) stop(null, null);
-                job.currentFrame++;
-                job.percent = Math.floor((job.currentFrame / job.numOfTotalFrames) * 100);
-                job.time.elapsed = moment().diff(job.time.start);
+            gpio.setup(settings.pin, gpio.DIR_OUT, ()=> {
+                jobId = setInterval(function () {
+                    io.sockets.emit('zlapser-status', job);
+                    if (job.numOfTotalFrames <= job.currentFrame) {
+                        stop(null, null);
+                        return;
 
-                gpio.write(settings.pin, 1, ()=> {
-                });
-                setTimeout(()=> {
-                    gpio.write(settings.pin, 0, ()=> {
-                    });
-                }, 100);
-            }, job.interval);
-        });
+                    }
+                    job.currentFrame++;
+                    job.percent = Math.floor((job.currentFrame / job.numOfTotalFrames) * 100);
+                    job.time.elapsed = moment().diff(job.time.start);
+
+                    gpio.write(settings.pin, 1);
+                    setTimeout(()=> {
+                        gpio.write(settings.pin, 0);
+                    }, 100);
+                }, job.interval);
+            });
+        }
         res.send("ok");
     };
 
     var stop = (req, res) => {
-        if (jobId === null) return;
-        clearInterval(jobId);
-        jobId = null;
-        job.isRunning = false;
-        io.sockets.emit('zlapser-status', job);
-        gpio.destroy();
-        //io.sockets.emit('zlapser-running', false);
+        if (jobId !== null && job.isPi) {
+            clearInterval(jobId);
+            jobId = null;
+            job.isRunning = false;
+            io.sockets.emit('zlapser-status', job);
+            gpio.destroy();
+            //io.sockets.emit('zlapser-running', false);
+        }
+        res.send("ok");
     };
 
     var shutdown = (req, res) => {
-        proc.exec("shutdown -h now", ()=> {
-        }, ()=> {
-        });
+        if (job.isPi) {
+            proc.exec("shutdown -h now", ()=> {
+            }, ()=> {
+            });
+        }
         res.send("ok");
     };
 
     var snap = (req, res) => {
-        var o = req.body;
-        if (o.sandbox) {
-            res.send(true)
-            return;
+        if (job.isPi) {
+            gpio.setup(req.body.pin, gpio.DIR_OUT, ()=> {
+                gpio.write(req.body.pin, 1, ()=> {
+                    setTimeout(()=> {
+                        gpio.write(req.body.pin, 0, ()=> {
+                            gpio.destroy();
+                        });
+                    }, 100);
+                });
+            });
         }
-        res.send("ok" + req.body.pin);
+        res.send("ok");
     };
 
     return {
@@ -130,9 +140,13 @@ app.get("/readme.md", (req, res)=> {
     });
 });
 
-io.enable('browser client minification');
+io.set('log level', 1); // reduce logging
+//io.enable('browser client minification');
 io.sockets.on('connection', (socket) => {
     socket.emit('zlapser-status', model.job);
+});
+fs.exists("/sys/class/gpio", (exists)=> {
+    model.job.isPi = exists;
 });
 
 

@@ -9,6 +9,7 @@ angular.module('app', [], function ($routeProvider) {
         templateUrl: "bye.tmpl"
     });
     $routeProvider.when('/start', {
+        controller: "start",
         templateUrl: "start.tmpl"
     });
     $routeProvider.when('/review', {
@@ -26,26 +27,25 @@ angular.module('app', [], function ($routeProvider) {
     "$rootScope", 
     "$location", 
     "SetupModel", 
-    function ($rootScope, $location, model) {
+    "$timeout", 
+    "$http", 
+    function ($rootScope, $location, model, $timeout, $http) {
         $rootScope.go = function (url) {
             $location.path(url);
         };
         $rootScope.job = {
+            isInitial: true
         };
-        $rootScope.model = model;
-        $rootScope.toggleSandbox = function () {
-            model.sandbox = !model.sandbox;
-        };
-        var socket = io.connect('http://localhost');
+        var socket = io.connect('http://' + window.location.hostname);
         socket.on("zlapser-status", function (data) {
-            console.log(data);
-            angular.extend($rootScope.job, data);
-            if($rootScope.job.isRunning) {
-                $rootScope.go("running");
-            }
-            if(!$rootScope.$$phase) {
-                $rootScope.$apply();
-            }
+            $timeout(function () {
+                angular.extend($rootScope.job, data, {
+                    isInitial: false
+                });
+                if($rootScope.job.isRunning) {
+                    $rootScope.go("running");
+                }
+            });
         });
         $('body').popover({
             selector: '[data-toggle="popover"]'
@@ -53,18 +53,28 @@ angular.module('app', [], function ($routeProvider) {
         $('body').tooltip({
             selector: 'a[rel="tooltip"], [data-toggle="tooltip"]'
         });
+    }]).controller("start", [
+    "$scope", 
+    "SetupModel", 
+    function ($scope, model) {
+        $scope.model = model;
     }]).controller("setup", [
     "$rootScope", 
     "$scope", 
     "$http", 
-    function ($rootScope, $scope, $http) {
+    "SetupModel", 
+    function ($rootScope, $scope, $http, model) {
+        $scope.model = model;
         $scope.submit = function () {
-            $http.post("/data", $rootScope.model).success(function (res) {
+            $http.post("/data", $scope.model).success(function (res) {
                 $scope.go("review");
             });
         };
         $scope.snap = function () {
-            $http.post("/snap", $rootScope.model);
+            $http.post("/snap", $scope.model);
+        };
+        $scope.gpio = function () {
+            $scope.showGpio = !$scope.showGpio;
         };
     }]).controller("review", [
     "$scope", 
@@ -93,13 +103,16 @@ angular.module('app', [], function ($routeProvider) {
         };
     }]).service("SetupModel", [
     function () {
+        var optime = 125, fintime = 5, finrate = 25;
         return {
             pin: 1,
-            optime: 10,
-            fintime: 10,
-            finrate: 10,
-            pin: 4,
-            sandbox: true
+            optime: optime,
+            fintime: fintime,
+            finrate: finrate,
+            fpsErr: function () {
+                return ((this.fintime * this.finrate) / this.optime) > 2;
+            },
+            pin: 7
         };
     }]).filter("EnableDisable", function () {
     return function (input) {

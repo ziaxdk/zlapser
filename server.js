@@ -5,6 +5,7 @@ var model = (function () {
     };
     var jobId = null;
     var job = {
+        isPi: false,
         isRunning: false,
         percent: 0,
         numOfTotalFrames: 0,
@@ -22,55 +23,60 @@ var model = (function () {
         job.isRunning = true;
         job.time.start = moment();
         job.time.end = job.time.start.clone().add('seconds', 60);
-        console.log(job);
     };
     var start = function (req, res) {
-        if(jobId !== null) {
-            return;
+        if(jobId === null && job.isPi) {
+            setupJob();
+            gpio.setup(settings.pin, gpio.DIR_OUT, function () {
+                jobId = setInterval(function () {
+                    io.sockets.emit('zlapser-status', job);
+                    if(job.numOfTotalFrames <= job.currentFrame) {
+                        stop(null, null);
+                        return;
+                    }
+                    job.currentFrame++;
+                    job.percent = Math.floor((job.currentFrame / job.numOfTotalFrames) * 100);
+                    job.time.elapsed = moment().diff(job.time.start);
+                    gpio.write(settings.pin, 1);
+                    setTimeout(function () {
+                        gpio.write(settings.pin, 0);
+                    }, 100);
+                }, job.interval);
+            });
         }
-        setupJob();
-        gpio.setup(settings.pin, gpio.DIR_OUT, function () {
-            jobId = setInterval(function () {
-                io.sockets.emit('zlapser-status', job);
-                if(job.numOfTotalFrames <= job.currentFrame) {
-                    stop(null, null);
-                }
-                job.currentFrame++;
-                job.percent = Math.floor((job.currentFrame / job.numOfTotalFrames) * 100);
-                job.time.elapsed = moment().diff(job.time.start);
-                gpio.write(settings.pin, 1, function () {
-                });
-                setTimeout(function () {
-                    gpio.write(settings.pin, 0, function () {
-                    });
-                }, 100);
-            }, job.interval);
-        });
         res.send("ok");
     };
     var stop = function (req, res) {
-        if(jobId === null) {
-            return;
+        if(jobId !== null && job.isPi) {
+            clearInterval(jobId);
+            jobId = null;
+            job.isRunning = false;
+            io.sockets.emit('zlapser-status', job);
+            gpio.destroy();
         }
-        clearInterval(jobId);
-        jobId = null;
-        job.isRunning = false;
-        io.sockets.emit('zlapser-status', job);
-        gpio.destroy();
+        res.send("ok");
     };
     var shutdown = function (req, res) {
-        proc.exec("shutdown -h now", function () {
-        }, function () {
-        });
+        if(job.isPi) {
+            proc.exec("shutdown -h now", function () {
+            }, function () {
+            });
+        }
         res.send("ok");
     };
     var snap = function (req, res) {
-        var o = req.body;
-        if(o.sandbox) {
-            res.send(true);
-            return;
+        if(job.isPi) {
+            gpio.setup(req.body.pin, gpio.DIR_OUT, function () {
+                gpio.write(req.body.pin, 1, function () {
+                    setTimeout(function () {
+                        gpio.write(req.body.pin, 0, function () {
+                            gpio.destroy();
+                        });
+                    }, 100);
+                });
+            });
         }
-        res.send("ok" + req.body.pin);
+        res.send("ok");
     };
     return {
         job: job,
@@ -106,9 +112,12 @@ app.get("/readme.md", function (req, res) {
         res.send(converter.makeHtml(data));
     });
 });
-io.enable('browser client minification');
+io.set('log level', 1);
 io.sockets.on('connection', function (socket) {
     socket.emit('zlapser-status', model.job);
+});
+fs.exists("/sys/class/gpio", function (exists) {
+    model.job.isPi = exists;
 });
 app.use(express.static(__dirname + "/src"));
 theServer.listen(8080);

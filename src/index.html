@@ -3,65 +3,18 @@
 <head>
     <title>Zlapser</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
-    <style type="text/css">
-        body {
-            padding-top: 60px;
-            padding-bottom: 40px;
-        }
-
-        @media (max-width: 980px) {
-            /* Enable use of floated navbar text */
-            .navbar-text.pull-right {
-                float: none;
-                padding-left: 5px;
-                padding-right: 5px;
-            }
-        }
-
-        .view-enter-setup, .view-leave-setup, .slide-enter-setup, .slide-leave-setup, .wave-enter-setup, .wave-leave-setup {
-            -webkit-transition: all linear 1s;
-            -moz-transition: all linear 1s;
-            -o-transition: all linear 1s;
-            transition: all linear 1s;
-        }
-
-        .view-enter-setup {
-            opacity: 0;
-        }
-
-        .view-enter-setup.view-enter-start {
-            opacity: 1;
-        }
-
-        .view-leave-setup {
-            opacity: 1;
-        }
-
-        .view-leave-setup.view-leave-start {
-            opacity: 0;
-        }
-
-        [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
-            display: none;
-        }
-    </style>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/font-awesome.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
 </head>
 <body ng-app="app">
 <div class="navbar navbar-inverse navbar-fixed-top">
     <div class="navbar-inner">
         <div class="container-fluid">
-            <a class="brand" href="#">ZLapser</a>
+            <a class="brand" href="#"><i class="icon-camera-retro"></i> ZLapser</a>
 
-            <div class="btn-group pull-right">
-                <a class="btn dropdown-toggle" data-toggle="dropdown" href="javascript:;">
-                    Menu
-                    <span class="caret"></span>
-                </a>
-                <ul class="dropdown-menu">
-                    <li><a href="javascript:;" ng-click="toggleSandbox()">{{model.sandbox|EnableDisable}} sandbox mode</a></li>
-                    <li><a href="#" data-toggle="modal" data-target="#shutdownmodel">Shutdown</a></li>
-                </ul>
+            <div class="pull-right">
+                <a data-toggle="modal" data-target="#shutdownmodel"><i class="icon-off icon-2x"></i></a>
             </div>
         </div>
     </div>
@@ -76,10 +29,13 @@
     <hr>
     <footer>
         <p>&copy; ZIAX - <a href="http://www.ziax.dk" target="_blank">www.ziax.dk</a> 2013 - Zlapser server status:
-            <strong>{{isRunning}}</strong> -
-
-
+            <strong>{{job.isRunning}}</strong> <i ng-show="job.isInitial" class="icon-spinner icon-spin"></i>
         </p>
+
+        <div class="alert alert-error" ng-hide="{{job.isPi}}">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <strong>Ups!</strong> This can only be runned on a Rasperry pi
+        </div>
     </footer>
 </div>
 
@@ -103,13 +59,14 @@
 
 <script type="text/ng-template" id="html.tmpl">
     <div class="hero-unit">
-        <h1>Hello</h1>
+        <h1><i class="icon-bullhorn"></i> Hello</h1>
 
-        <p>This is the ZLapser. It can slap you in your neck.. Nooo, seriously it can take a lots of photograhps over a
+        <p> This is the ZLapser. It can slap you in your neck.. Nooo, seriously it can take a lots of photograhps over a
             long period of time and afterwards, you can glue em
             to a movie. Doesn't that sound cool?</p>
 
-        <p><a ng-click="go('start')" class="btn btn-primary btn-large">Click to start &raquo;</a></p>
+        <p><a ng-click="go('start')" class="btn btn-primary btn-large">Click to <span
+                ng-show="{{job.isPi}}">start</span><span ng-hide="{{job.isPi}}">preview</span> &raquo;</a></p>
 
         <p class="text-center">
             <a ng-click="go('about')" class="btn btn-link">
@@ -118,53 +75,81 @@
 </script>
 
 <script type="text/ng-template" id="start.tmpl">
-    <h1>Step 1 of </h1>
+    <h1>Step 1 of 2</h1>
 
     <form ng-controller="setup" ng-submit="submit()" novalidate name="setupForm">
         <fieldset>
             <legend>Hardware</legend>
             <label>Which pin is the "homecooked" circuit attached to <i class="icon-question-sign"
-                                                                        data-content="The circuit must be attached to the Pi. Select which pin from range 1 to 8"
+                                                                        data-content="The circuit must be attached to the Pi. Select which pin from range 1 to 26"
                                                                         data-toggle="popover"></i></label>
             <input type="number" name="pin" ng-model="model.pin" placeholder="Pin..." class="input-mini" required
                    min="1"
-                   max="8"/> <input type="button" class="btn btn-small" style="Margin-top:-10px;" ng-click="snap()"
-                                    value="Take a snap"/>
+                   max="26"/> <input type="button" class="btn btn-small" style="Margin-top:-10px;" ng-click="snap()"
+                                     ng-disabled="{{!job.isPi}}"
+                                     value="Take a snap"/> <input type="button" class="btn btn-small"
+                                                                  style="Margin-top:-10px;" ng-click="gpio()"
+                                                                  value="Show me GPIO pins"/>
 
+            <div ng-show="showGpio">
+                <img src="img/GPIOs.png" alt="GPIO pin diagram">
+
+                <p>Source: <a href="http://elinux.org/RPi_Low-level_peripherals">http://elinux.org/RPi_Low-level_peripherals</a>
+                </p>
+            </div>
             <div class="alert alert-error" ng-show="(!setupForm.pin.$valid)&&(!setupForm.pin.$pristine)">
-                <strong>Oh!!</strong> Required and range from 1 to 8
+                <strong>Oh!!</strong> Required and range from 1 to 26
             </div>
             <legend>Recording</legend>
             <label>Operation time the camera will take pictures <i class="icon-question-sign"
                                                                    data-content="Specify how long the camera should take photos. Valid inputs: 00:00:00, 00h, 000000s"
                                                                    data-toggle="popover"></i></label>
             <input type="text" ng-model="model.optime" placeholder="Duration..." required/>
-            <label>How long should the movie be <i class="icon-question-sign"
-                                                   data-content="Specify how long the final movie should be. Valid inpu: 00:00:00, 00h, 000000s"
-                                                   data-toggle="popover"></i></label>
+            <label>How long should the final movie be <i class="icon-question-sign"
+                                                         data-content="Specify how long the final movie should be. Valid input: 00:00:00, 00h, 000000s"
+                                                         data-toggle="popover"></i></label>
             <input type="text" ng-model="model.fintime" placeholder="Movie duration..." required/>
             <label>Desired framerate in final move <i class="icon-question-sign"
                                                       data-content="Specify the framerate in the final movie"
                                                       data-toggle="popover"></i></label>
-            <input type="number" ng-model="model.finrate" placeholder="Framerate..." class="input-mini" required/>
+            <input type="text" ng-model="model.finrate" placeholder="Framerate..." class="input-mini" required
+                   pattern="[0-9]*"/>
+
+            <div class="alert alert-error" ng-show="model.fpsErr()">
+                <strong>Oh snap!</strong> fps cannot be greater than 2. At least on my old camera. :-)
+            </div>
 
             <div class="alert alert-block alert-info">
                 <h4>info!</h4>
 
-                <div>Total frames to be captured: <strong>{{model.fintime*model.finrate}}</strong> <i
-                        class="icon-thumbs-up"></i></div>
-                <div>Picture per second: <strong>{{(model.fintime*model.finrate)/model.optime | number:2}}</strong>
+                <div>Total frames to be captured: <strong>{{model.fintime*model.finrate}}</strong></div>
+                <div>Pictures per second: <strong>{{(model.fintime*model.finrate)/model.optime | number:2}}</strong> <i
+                        ng-class="{'icon-thumbs-up': !model.fpsErr(), 'icon-thumbs-down': model.fpsErr()}"></i>
                 </div>
             </div>
-            <button type="submit" class="btn" ng-disabled="!(setupForm.$valid)">Submit</button>
+            <button type="submit" class="btn" ng-disabled="!(setupForm.$valid)||model.fpsErr()">Submit</button>
         </fieldset>
     </form>
 </script>
 
 <script type="text/ng-template" id="review.tmpl">
-    <h1>Step 2 of </h1>
+    <h1>Step 2 of 2</h1>
 
-    <a href="javascript:;" ng-click="startJob()">Press here</a> to start...
+    <p class="lead text-center">
+        <i class="icon-quote-left"></i> A picture is worth a thousand words <i class="icon-quote-right"></i><br>
+        <a href="http://en.wikipedia.org/wiki/A_picture_is_worth_a_thousand_words" target="_blank"><small>Wikipedia</small></a>
+    </p>
+
+    <p class="text-center">I wonder what thousands of pictures, will tell you.</p>
+
+    <div ng-show="{{job.isPi}}">
+        <p class="text-center lead">
+            <a ng-click="startJob()" class="anone">
+                <i class="icon-play icon-4x"></i><br>Start zlapser
+            </a>
+        </p>
+    </div>
+
 </script>
 
 <script type="text/ng-template" id="bye.tmpl">
