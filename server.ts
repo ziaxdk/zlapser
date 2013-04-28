@@ -131,7 +131,7 @@ app.post("/snap", model.snap);
 app.put("/shutdown", model.shutdown);
 app.get("/readme.md", (req, res)=> {
 
-    fs.readFile(__dirname + '/readme.md', 'utf8', function (err, data) {
+    fs.readFile(__dirname + '/readme.md', 'utf-8', function (err, data) {
         if (err) {
             res.send("<p>Error getting readme.md</p>");
         }
@@ -147,6 +147,7 @@ io.sockets.on('connection', (socket) => {
 });
 fs.exists("/sys/class/gpio", (exists)=> {
     model.job.isPi = exists;
+    //model.job.isPi = true;
 });
 
 

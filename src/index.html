@@ -3,6 +3,8 @@
 <head>
     <title>Zlapser</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="js/jquery-1.9.1.min.js" type="text/javascript"></script>
+    <script src="js/angular.js"></script>
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/font-awesome.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
@@ -28,11 +30,9 @@
     </div>
     <hr>
     <footer>
-        <p>&copy; ZIAX - <a href="http://www.ziax.dk" target="_blank">www.ziax.dk</a> 2013 - Zlapser server status:
-            <strong>{{job.isRunning}}</strong> <i ng-show="job.isInitial" class="icon-spinner icon-spin"></i>
+        <p>&copy; ZIAX - <a href="http://www.ziax.dk" target="_blank">www.ziax.dk</a> 2013 <i ng-show="job.isInitial" class="icon-spinner icon-spin"></i>
         </p>
-
-        <div class="alert alert-error" ng-hide="{{job.isPi}}">
+        <div class="alert alert-error" ng-hide="job.isPi">
             <button type="button" class="close" data-dismiss="alert">&times;</button>
             <strong>Ups!</strong> This can only be runned on a Rasperry pi
         </div>
@@ -66,7 +66,7 @@
             to a movie. Doesn't that sound cool?</p>
 
         <p><a ng-click="go('start')" class="btn btn-primary btn-large">Click to <span
-                ng-show="{{job.isPi}}">start</span><span ng-hide="{{job.isPi}}">preview</span> &raquo;</a></p>
+                ng-show="job.isPi">start</span><span ng-hide="job.isPi">preview</span> &raquo;</a></p>
 
         <p class="text-center">
             <a ng-click="go('about')" class="btn btn-link">
@@ -196,9 +196,7 @@
     </div>
 </script>
 
-<script src="js/jquery-1.9.1.min.js" type="text/javascript"></script>
 <script src="js/bootstrap.js" type="text/javascript"></script>
-<script src="js/angular.js"></script>
 <script src="js/moment.min.js" type="text/javascript"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="ngapp.js" type="text/javascript"></script>

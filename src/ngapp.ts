@@ -40,7 +40,7 @@ angular.module('app', [], function ($routeProvider:ng.IRouteProvider) {
         socket.on("zlapser-status", (data)=> {
             $timeout(function () {
                 angular.extend($rootScope.job, data, { isInitial: false });
-                //console.log("zlapser-status", $rootScope.job);
+                console.log("zlapser-status", $rootScope.job);
                 if ($rootScope.job.isRunning)
                     $rootScope.go("running");
             });
