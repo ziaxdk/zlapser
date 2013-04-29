@@ -24,7 +24,7 @@ angular.module('app', [], function ($routeProvider:ng.IRouteProvider) {
         redirectTo: "/"
     });
 })
-    .run(["$rootScope", "$location", "SetupModel", "$timeout", "$http", ($rootScope:INgAppRootScope, $location:ng.ILocationService, model:ISetupModel, $timeout:ng.ITimeoutService, $http: ng.IHttpService)=> {
+    .run(["$rootScope", "$location", "SetupModel", "$timeout", "$http", ($rootScope:INgAppRootScope, $location:ng.ILocationService, model:ISetupModel, $timeout:ng.ITimeoutService, $http:ng.IHttpService)=> {
         $rootScope.go = function (url) {
             $location.path(url);
         };
@@ -70,7 +70,11 @@ angular.module('app', [], function ($routeProvider:ng.IRouteProvider) {
     }])
     .controller("review", ["$scope", "$rootScope", "$http", ($scope, $rootScope, $http)=> {
         $scope.startJob = ()=> {
-            $http.post("/start");
+            if ($scope.job.isPi) {
+                $http.post("/start");
+            } else {
+                $("#notpimodel").modal("show");
+            }
         };
     }])
     .controller("running", ["$scope", "$http", ($scope, $http)=> {

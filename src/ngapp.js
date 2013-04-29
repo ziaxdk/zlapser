@@ -83,7 +83,11 @@ angular.module('app', [], function ($routeProvider) {
     "$http", 
     function ($scope, $rootScope, $http) {
         $scope.startJob = function () {
-            $http.post("/start");
+            if($scope.job.isPi) {
+                $http.post("/start");
+            } else {
+                $("#notpimodel").modal("show");
+            }
         };
     }]).controller("running", [
     "$scope", 

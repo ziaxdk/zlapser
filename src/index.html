@@ -14,10 +14,8 @@
     <div class="navbar-inner">
         <div class="container-fluid">
             <a class="brand" href="#"><i class="icon-camera-retro"></i> ZLapser</a>
-
-            <div class="pull-right">
-                <a data-toggle="modal" data-target="#shutdownmodel"><i class="icon-off icon-2x"></i></a>
-            </div>
+            <a data-toggle="modal" data-target="#shutdownmodel" class="anone pull-right" style="font-size: 40px;"><i
+                    class="icon-off"></i></a>
         </div>
     </div>
 </div>
@@ -30,8 +28,10 @@
     </div>
     <hr>
     <footer>
-        <p>&copy; ZIAX - <a href="http://www.ziax.dk" target="_blank">www.ziax.dk</a> 2013 <i ng-show="job.isInitial" class="icon-spinner icon-spin"></i>
+        <p>&copy; ZIAX - <a href="http://www.ziax.dk" target="_blank">www.ziax.dk</a> 2013 <i ng-show="job.isInitial"
+                                                                                              class="icon-spinner icon-spin"></i>
         </p>
+
         <div class="alert alert-error" ng-hide="job.isPi">
             <button type="button" class="close" data-dismiss="alert">&times;</button>
             <strong>Ups!</strong> This can only be runned on a Rasperry pi
@@ -50,6 +50,19 @@
     <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
         <button class="btn btn-danger" ng-click="fireDown()">Shutdown</button>
+    </div>
+</div>
+
+<div class="modal hide fade" id="notpimodel">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3>Cannot do</h3>
+    </div>
+    <div class="modal-body">
+        <p>The next step is actually to start the zlapsing, but this is not running of a pi..</p>
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
     </div>
 </div>
 
@@ -137,18 +150,18 @@
 
     <p class="lead text-center">
         <i class="icon-quote-left"></i> A picture is worth a thousand words <i class="icon-quote-right"></i><br>
-        <a href="http://en.wikipedia.org/wiki/A_picture_is_worth_a_thousand_words" target="_blank"><small>Wikipedia</small></a>
+        <a href="http://en.wikipedia.org/wiki/A_picture_is_worth_a_thousand_words" target="_blank">
+            <small>Wikipedia</small>
+        </a>
     </p>
 
     <p class="text-center">I wonder what thousands of pictures, will tell you.</p>
 
-    <div ng-show="{{job.isPi}}">
-        <p class="text-center lead">
-            <a ng-click="startJob()" class="anone">
-                <i class="icon-play icon-4x"></i><br>Start zlapser
-            </a>
-        </p>
-    </div>
+    <p class="text-center lead">
+        <a ng-click="startJob()" class="anone">
+            <i class="icon-play icon-4x"></i><br>Start zlapser
+        </a>
+    </p>
 
 </script>
 

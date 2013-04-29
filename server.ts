@@ -59,7 +59,7 @@ var model = (() => {
                 }, job.interval);
             });
         }
-        res.send("ok");
+        res.send(")]}',\n"+"ok");
     };
 
     var stop = (req, res) => {
@@ -71,7 +71,9 @@ var model = (() => {
             gpio.destroy();
             //io.sockets.emit('zlapser-running', false);
         }
-        res.send("ok");
+        if (res) {
+            res.send(")]}',\n"+"ok");
+        }
     };
 
     var shutdown = (req, res) => {
@@ -80,7 +82,7 @@ var model = (() => {
             }, ()=> {
             });
         }
-        res.send("ok");
+        res.send(")]}',\n"+"ok");
     };
 
     var snap = (req, res) => {
@@ -95,14 +97,14 @@ var model = (() => {
                 });
             });
         }
-        res.send("ok");
+        res.send(")]}',\n"+"ok");
     };
 
     return {
         job: job,
         data: (req, res) => {
             settings = req.body;
-            res.send("ok");
+            res.send(")]}',\n"+"ok");
         },
         start: start,
         stop: stop,
@@ -136,7 +138,7 @@ app.get("/readme.md", (req, res)=> {
             res.send("<p>Error getting readme.md</p>");
         }
         var converter = new pagedown.Converter();
-        res.send(converter.makeHtml(data));
+        res.send(")]}',\n"+converter.makeHtml(data));
     });
 });
 
