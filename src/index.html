@@ -202,10 +202,18 @@
         <div class="alert alert-info">
             Now you can empty your camera card and create a movie!
         </div>
-        <p class="lead">Some ffmpeg commands</p>
-        <pre>ffmpeg -r {{model.finrate}} -i frame%03d.jpg -sameq -s hd720 -vcodec libx264 -vpre hq -crf 25 OUTPUT.MP4</pre>
-        <pre>ffmpeg -r {{model.finrate}} -i frame%03d.jpg -vcodec copy OUTPUT.AVI</pre>
+        <div>
+            Rename your files to img_XXXX.jpg, where XXXX is a counter. MUST start with 0001 = img_0001.jpg
 
+        </div>
+        <p class="lead">Some ffmpeg commands</p>
+        <p><a href="http://en.wikipedia.org/wiki/H264" target="_blank">h264</a></p>
+        <pre>ffmpeg -r {{model.finrate}} -i img_%04d.jpg -vcodec libx264 movie.mp4</pre>
+        <p><a href="http://en.wikipedia.org/wiki/WebM" target="_blank">WebM</a></p>
+        <pre>ffmpeg -r {{model.finrate}} -i img_%04d.jpg movie.webm</pre>
+        <p><a href="http://en.wikipedia.org/wiki/Audio_Video_Interleave" target="_blank">Raw avi</a></p>
+        <pre>ffmpeg -r {{model.finrate}} -i img_%04d.jpg -vcodec copy movie.avi</pre>
+        <p>Sources <a href="http://ffmpeg.org/trac/ffmpeg/wiki/Create%20a%20video%20slideshow%20from%20images" target="_blank">ffmpeg.org</a> <a href="http://stackoverflow.com/questions/7468274/ffmpeg-images-to-video-script-anyone" target="_blank">Stackoverflow</a></p>
     </div>
 </script>
 

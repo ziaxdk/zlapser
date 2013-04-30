@@ -154,5 +154,8 @@ fs.exists("/sys/class/gpio", (exists)=> {
 
 
 app.use(express.static(__dirname + "/src"));
-theServer.listen(8080);
-console.log("Up and running on http://localhost:8080... :-)");
+var port = process.env.PORT || 5000;
+theServer.listen(port, function() {
+    console.log("Listening on " + port);
+});
+

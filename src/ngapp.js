@@ -92,7 +92,9 @@ angular.module('app', [], function ($routeProvider) {
     }]).controller("running", [
     "$scope", 
     "$http", 
-    function ($scope, $http) {
+    "SetupModel", 
+    function ($scope, $http, model) {
+        $scope.model = model;
         $scope.stopJob = function () {
             $http.post("/stop");
         };

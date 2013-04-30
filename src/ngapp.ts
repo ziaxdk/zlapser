@@ -77,7 +77,8 @@ angular.module('app', [], function ($routeProvider:ng.IRouteProvider) {
             }
         };
     }])
-    .controller("running", ["$scope", "$http", ($scope, $http)=> {
+    .controller("running", ["$scope", "$http", "SetupModel", ($scope, $http, model:ISetupModel)=> {
+        $scope.model = model;
         $scope.stopJob = ()=> {
             $http.post("/stop");
         };
