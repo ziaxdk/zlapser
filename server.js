@@ -114,16 +114,27 @@ app.get("/readme.md", function (req, res) {
         res.send(")]}',\n" + converter.makeHtml(data));
     });
 });
-io.set('log level', 1);
 io.sockets.on('connection', function (socket) {
     socket.emit('zlapser-status', model.job);
 });
 fs.exists("/sys/class/gpio", function (exists) {
     model.job.isPi = exists;
 });
+app.configure('development', function () {
+    io.set('log level', 1);
+    console.log("configure development");
+});
+app.configure('production', function () {
+    io.set("transports", [
+        "xhr-polling"
+    ]);
+    io.set("polling duration", 10);
+    io.set('log level', 1);
+    console.log("configure production");
+});
 app.use(express.static(__dirname + "/src"));
-var port = process.env.PORT || 5000;
+var port = process.env.PORT || 8080;
 theServer.listen(port, function () {
-    console.log("Listening on " + port);
+    console.log("Listening on " + port + ", mode " + process.env.NODE_ENV);
 });
 //@ sourceMappingURL=server.js.map

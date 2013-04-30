@@ -59,7 +59,7 @@ var model = (() => {
                 }, job.interval);
             });
         }
-        res.send(")]}',\n"+"ok");
+        res.send(")]}',\n" + "ok");
     };
 
     var stop = (req, res) => {
@@ -72,7 +72,7 @@ var model = (() => {
             //io.sockets.emit('zlapser-running', false);
         }
         if (res) {
-            res.send(")]}',\n"+"ok");
+            res.send(")]}',\n" + "ok");
         }
     };
 
@@ -82,7 +82,7 @@ var model = (() => {
             }, ()=> {
             });
         }
-        res.send(")]}',\n"+"ok");
+        res.send(")]}',\n" + "ok");
     };
 
     var snap = (req, res) => {
@@ -97,14 +97,14 @@ var model = (() => {
                 });
             });
         }
-        res.send(")]}',\n"+"ok");
+        res.send(")]}',\n" + "ok");
     };
 
     return {
         job: job,
         data: (req, res) => {
             settings = req.body;
-            res.send(")]}',\n"+"ok");
+            res.send(")]}',\n" + "ok");
         },
         start: start,
         stop: stop,
@@ -138,11 +138,10 @@ app.get("/readme.md", (req, res)=> {
             res.send("<p>Error getting readme.md</p>");
         }
         var converter = new pagedown.Converter();
-        res.send(")]}',\n"+converter.makeHtml(data));
+        res.send(")]}',\n" + converter.makeHtml(data));
     });
 });
 
-io.set('log level', 1); // reduce logging
 //io.enable('browser client minification');
 io.sockets.on('connection', (socket) => {
     socket.emit('zlapser-status', model.job);
@@ -153,9 +152,24 @@ fs.exists("/sys/class/gpio", (exists)=> {
 });
 
 
-app.use(express.static(__dirname + "/src"));
-var port = process.env.PORT || 5000;
-theServer.listen(port, function() {
-    console.log("Listening on " + port);
+app.configure('development', ()=> {
+    io.set('log level', 1); // reduce logging
+    console.log("configure development");
 });
+
+app.configure('production', ()=> {
+    io.set("transports", ["xhr-polling"]);
+    io.set("polling duration", 10);
+    io.set('log level', 1); // reduce logging
+    console.log("configure production");
+});
+
+
+
+app.use(express.static(__dirname + "/src"));
+var port = process.env.PORT || 8080;
+theServer.listen(port, function () {
+    console.log("Listening on " + port + ", mode " + process.env.NODE_ENV);
+});
+//console.log(process.env)
 

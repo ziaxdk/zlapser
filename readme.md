@@ -1,12 +1,16 @@
 # Camera - Canon 20D
-
 My camera is an oldie: [Canon 20D](http://www.dpreview.com/reviews/canoneos20d) and the remote shutter is uncommon. Look [here](http://www.doc-diy.net/photo/remote_pinout/#canon), but I found a cheap remote shutter at dealextreme.com. I bought [this](http://dx.com/p/rs-80n3-remote-shutter-switch-for-canon-dslr-camera-118865) and [this](http://dx.com/p/wired-remote-shutter-for-canon-109cm-length-72104). Both tested ok on the 20D.
 
 ## Schematic
 [![CircuitLab Schematic eeemb8](https://www.circuitlab.com/circuit/eeemb8/screenshot/540x405/)](https://www.circuitlab.com/circuit/eeemb8/zlapser/)
 
+## Requirements
+- Rasperry Pi
+- Electronic circuit or something. Check the schematic above
+- Lots of nerd power. :-)
+
 # Raspberry Pi
-## Raspbian “wheezy”
+## Raspbian “wheezy” distribution
 ### Initial setup
 
 When the [SD card](http://elinux.org/RPi_Easy_SD_Card_Setup) has been creted, configure the PI using

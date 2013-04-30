@@ -49,7 +49,7 @@
     </div>
     <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-        <button class="btn btn-danger" ng-click="fireDown()">Shutdown</button>
+        <button class="btn btn-danger" ng-click="fireDown()" ng-disabled="!job.isPi">Shutdown</button>
     </div>
 </div>
 
@@ -59,7 +59,7 @@
         <h3>Cannot do</h3>
     </div>
     <div class="modal-body">
-        <p>The next step is actually to start the zlapsing, but this is not running of a pi..</p>
+        <p>The next step is actually to start the zlapsing, but this is not running on a pi..</p>
     </div>
     <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
