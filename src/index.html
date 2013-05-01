@@ -3,11 +3,9 @@
 <head>
     <title>Zlapser</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="js/jquery-1.9.1.min.js" type="text/javascript"></script>
-    <script src="js/angular.js"></script>
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/font-awesome.min.css" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
+    <link href="css/app.css" rel="stylesheet">
 </head>
 <body ng-app="app">
 <div class="navbar navbar-inverse navbar-fixed-top">
@@ -104,7 +102,7 @@
                                                                   style="Margin-top:-10px;" ng-click="gpio()"
                                                                   value="Show me GPIO pins"/>
 
-            <div ng-show="showGpio">
+            <div ng-show="showGpio" ng-animate="'expand'" style="display: none; translate3d(0,0,0)">
                 <img src="img/GPIOs.png" alt="GPIO pin diagram">
 
                 <p>Source: <a href="http://elinux.org/RPi_Low-level_peripherals">http://elinux.org/RPi_Low-level_peripherals</a>
@@ -200,24 +198,52 @@
         <h1 class="text-center">Finished. :-)</h1>
         <hr/>
         <div class="alert alert-info">
-            Now you can empty your camera card and create a movie!
+            <strong>Hurray!!</strong> Now you can empty your camera card and create a movie!
         </div>
         <div>
             Rename your files to img_XXXX.jpg, where XXXX is a counter. MUST start with 0001 = img_0001.jpg
 
         </div>
-        <p class="lead">Some ffmpeg commands</p>
-        <p><a href="http://en.wikipedia.org/wiki/H264" target="_blank">h264</a></p>
+        <h3>Some <a href="http://ffmpeg.org" target="_blank">ffmpeg</a> commands</h3>
+        <h4><a href="http://en.wikipedia.org/wiki/H264" target="_blank">h264</a></h4>
         <pre>ffmpeg -r {{model.finrate}} -i img_%04d.jpg -vcodec libx264 movie.mp4</pre>
-        <p><a href="http://en.wikipedia.org/wiki/WebM" target="_blank">WebM</a></p>
+        <h4><a href="http://en.wikipedia.org/wiki/WebM" target="_blank">WebM</a></h4>
         <pre>ffmpeg -r {{model.finrate}} -i img_%04d.jpg movie.webm</pre>
-        <p><a href="http://en.wikipedia.org/wiki/Audio_Video_Interleave" target="_blank">Raw avi</a></p>
+        <h4><a href="http://en.wikipedia.org/wiki/Audio_Video_Interleave" target="_blank">Raw avi</a></h4>
         <pre>ffmpeg -r {{model.finrate}} -i img_%04d.jpg -vcodec copy movie.avi</pre>
-        <p>Sources <a href="http://ffmpeg.org/trac/ffmpeg/wiki/Create%20a%20video%20slideshow%20from%20images" target="_blank">ffmpeg.org</a> <a href="http://stackoverflow.com/questions/7468274/ffmpeg-images-to-video-script-anyone" target="_blank">Stackoverflow</a></p>
+        <p>Sources <a href="http://ffmpeg.org/trac/ffmpeg/wiki/Create%20a%20video%20slideshow%20from%20images"
+                      target="_blank">ffmpeg.org</a> and <a
+                href="http://stackoverflow.com/questions/7468274/ffmpeg-images-to-video-script-anyone" target="_blank">Stackoverflow</a>
+        </p>
+        <h6>Links:</h6>
+        <ul>
+            <li><a href="http://ffmpeg.org" target="_blank">http://ffmpeg.org</a></li>
+        </ul>
     </div>
 </script>
-
+<script src="js/jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="js/angular.js" type="text/javascript"></script>
 <script src="js/bootstrap.js" type="text/javascript"></script>
 <script src="js/moment.min.js" type="text/javascript"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="ngapp.js" type="text/javascript"></script>
+<script>
+    (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r;
+        i[r] = i[r] || function () {
+            (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date();
+        a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0];
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', 'UA-40568024-1', 'zlapser.net');
+    ga('send', 'pageview');
+
+</script>
+
+</body>
+</html>

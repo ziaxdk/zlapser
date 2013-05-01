@@ -42,7 +42,6 @@ angular.module('app', [], function ($routeProvider) {
                 angular.extend($rootScope.job, data, {
                     isInitial: false
                 });
-                console.log("zlapser-status", $rootScope.job);
                 if($rootScope.job.isRunning) {
                     $rootScope.go("running");
                 }
