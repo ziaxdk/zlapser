@@ -25,34 +25,45 @@ var model = (function () {
         job.time.end = job.time.start.clone().add('seconds', 60);
     };
     var start = function (req, res) {
-        if(jobId === null && job.isPi) {
-            setupJob();
-            gpio.setup(settings.pin, gpio.DIR_OUT, function () {
-                jobId = setInterval(function () {
-                    io.sockets.emit('zlapser-status', job);
-                    if(job.numOfTotalFrames <= job.currentFrame) {
-                        stop(null, null);
-                        return;
-                    }
-                    job.currentFrame++;
-                    job.percent = Math.floor((job.currentFrame / job.numOfTotalFrames) * 100);
-                    job.time.elapsed = moment().diff(job.time.start);
+        var setupInterval = function () {
+            jobId = setInterval(function () {
+                io.sockets.emit('zlapser-status', job);
+                if(job.numOfTotalFrames <= job.currentFrame) {
+                    stop(null, null);
+                    return;
+                }
+                job.currentFrame++;
+                job.percent = Math.floor((job.currentFrame / job.numOfTotalFrames) * 100);
+                job.time.elapsed = moment.duration(moment().diff(job.time.start)).humanize(false);
+                if(job.isPi) {
                     gpio.write(settings.pin, 1);
-                    setTimeout(function () {
+                }
+                setTimeout(function () {
+                    if(job.isPi) {
                         gpio.write(settings.pin, 0);
-                    }, 100);
-                }, job.interval);
-            });
+                    }
+                }, 100);
+            }, job.interval);
+        };
+        if(jobId === null) {
+            setupJob();
+            if(job.isPi) {
+                gpio.setup(settings.pin, gpio.DIR_OUT, setupInterval);
+            } else {
+                setupInterval();
+            }
         }
         res.send(")]}',\n" + "ok");
     };
     var stop = function (req, res) {
-        if(jobId !== null && job.isPi) {
+        if(jobId !== null) {
             clearInterval(jobId);
             jobId = null;
             job.isRunning = false;
             io.sockets.emit('zlapser-status', job);
-            gpio.destroy();
+            if(job.isPi) {
+                gpio.destroy();
+            }
         }
         if(res) {
             res.send(")]}',\n" + "ok");
@@ -130,6 +141,7 @@ app.configure('production', function () {
     ]);
     io.set("polling duration", 10);
     io.set('log level', 1);
+    io.enable('browser client minification');
     console.log("configure production");
 });
 app.use(express.static(__dirname + "/src"));

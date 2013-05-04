@@ -30,7 +30,10 @@ angular.module('app', [], function ($routeProvider:ng.IRouteProvider) {
         };
 
         $rootScope.job = {
-            isInitial: true
+            isInitial: true,
+            time: {
+                elapsed: 0
+            }
         };
 
         //$rootScope.model = model;
@@ -39,7 +42,10 @@ angular.module('app', [], function ($routeProvider:ng.IRouteProvider) {
 
         socket.on("zlapser-status", (data)=> {
             $timeout(function () {
-                angular.extend($rootScope.job, data, { isInitial: false });
+                angular.extend($rootScope.job, data, { isInitial: false, blink: true });
+                $timeout(()=> {
+                    $rootScope.job.blink = false;
+                }, 250);
                 //console.log("zlapser-status", $rootScope.job);
                 if ($rootScope.job.isRunning)
                     $rootScope.go("running");
@@ -70,15 +76,16 @@ angular.module('app', [], function ($routeProvider:ng.IRouteProvider) {
     }])
     .controller("review", ["$scope", "$rootScope", "$http", ($scope, $rootScope, $http)=> {
         $scope.startJob = ()=> {
-            if ($scope.job.isPi) {
-                $http.post("/start");
-            } else {
-                $("#notpimodel").modal("show");
-            }
+            $http.post("/start");
         };
     }])
     .controller("running", ["$scope", "$http", "SetupModel", ($scope, $http, model:ISetupModel)=> {
         $scope.model = model;
+        $scope.$watch(()=> {
+            if (!$scope.job.isRunning) return;
+            $scope.color = $scope.job.blink ? "#ccc" : "#000";
+        });
+        $scope.color = '#fff000';
         $scope.stopJob = ()=> {
             $http.post("/stop");
         };
@@ -112,5 +119,10 @@ angular.module('app', [], function ($routeProvider:ng.IRouteProvider) {
 
         }
     })
-;
+    .filter("ts", function(){
+      return (input)=>{
+          console.log(typeof input);
+        return input;
+      };
+    });
 

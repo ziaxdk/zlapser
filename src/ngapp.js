@@ -34,14 +34,21 @@ angular.module('app', [], function ($routeProvider) {
             $location.path(url);
         };
         $rootScope.job = {
-            isInitial: true
+            isInitial: true,
+            time: {
+                elapsed: 0
+            }
         };
         var socket = io.connect('http://' + window.location.hostname);
         socket.on("zlapser-status", function (data) {
             $timeout(function () {
                 angular.extend($rootScope.job, data, {
-                    isInitial: false
+                    isInitial: false,
+                    blink: true
                 });
+                $timeout(function () {
+                    $rootScope.job.blink = false;
+                }, 250);
                 if($rootScope.job.isRunning) {
                     $rootScope.go("running");
                 }
@@ -82,11 +89,7 @@ angular.module('app', [], function ($routeProvider) {
     "$http", 
     function ($scope, $rootScope, $http) {
         $scope.startJob = function () {
-            if($scope.job.isPi) {
-                $http.post("/start");
-            } else {
-                $("#notpimodel").modal("show");
-            }
+            $http.post("/start");
         };
     }]).controller("running", [
     "$scope", 
@@ -94,6 +97,13 @@ angular.module('app', [], function ($routeProvider) {
     "SetupModel", 
     function ($scope, $http, model) {
         $scope.model = model;
+        $scope.$watch(function () {
+            if(!$scope.job.isRunning) {
+                return;
+            }
+            $scope.color = $scope.job.blink ? "#ccc" : "#000";
+        });
+        $scope.color = '#fff000';
         $scope.stopJob = function () {
             $http.post("/stop");
         };
@@ -123,6 +133,11 @@ angular.module('app', [], function ($routeProvider) {
     }]).filter("EnableDisable", function () {
     return function (input) {
         return !!input ? "Enable" : "Disable";
+    }
+}).filter("ts", function () {
+    return function (input) {
+        console.log(typeof input);
+        return input;
     }
 });
 //@ sourceMappingURL=ngapp.js.map
