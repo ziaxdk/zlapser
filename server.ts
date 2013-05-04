@@ -41,13 +41,13 @@ var model = (() => {
         var setupInterval = () => {
             io.sockets.emit('zlapser-status', job);
             jobId = setInterval(function () {
+                job.currentFrame++;
                 io.sockets.emit('zlapser-status', job);
                 if (job.numOfTotalFrames <= job.currentFrame) {
                     stop(null, null);
                     return;
 
                 }
-                job.currentFrame++;
                 job.percent = Math.floor((job.currentFrame / job.numOfTotalFrames) * 100);
                 //job.time.elapsed = moment().diff(job.time.start);
                 job.time.elapsed = moment.duration(moment().diff(job.time.start)).humanize(false);

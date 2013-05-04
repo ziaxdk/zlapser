@@ -63,7 +63,6 @@ Check that is ok:
 	$ npm -v 					# v1.2.15
 
 #### Install zlapser
-
 	$ wget https://github.com/ziaxdk/zlapser/archive/v1.0.zip
 	$ unzip v1.0.zip
 	$ cd zlapser-1.0
