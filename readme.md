@@ -67,8 +67,8 @@ Check that is ok:
 	$ wget https://github.com/ziaxdk/zlapser/archive/master.zip
 	$ unzip master.zip
 	$ cd ...
-	$ npm install --production	# install node dependencies to zlapser. Takes a while.
-	$ sudo npm start 		    # run (or "sudo node server.js")
+	$ npm install --production	    # install node dependencies to zlapser. Takes a while.
+	$ sudo npm start 		        # run (or "sudo node server.js")
 
 You should see a message, that server is running. Cancel anytime with twice "ctrl+c"
 
