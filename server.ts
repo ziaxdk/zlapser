@@ -33,11 +33,13 @@ var model = (() => {
         job.interval = (settings.optime * 1000 / job.numOfTotalFrames);
         job.isRunning = true;
         job.time.start = moment();
-        job.time.end = job.time.start.clone().add('seconds', 60);
+        job.time.elapsed = "-";
+        job.time.end = job.time.start.clone().add('seconds', settings.optime);
     };
 
     var start = (req, res) => {
         var setupInterval = () => {
+            io.sockets.emit('zlapser-status', job);
             jobId = setInterval(function () {
                 io.sockets.emit('zlapser-status', job);
                 if (job.numOfTotalFrames <= job.currentFrame) {

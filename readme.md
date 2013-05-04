@@ -64,11 +64,11 @@ Check that is ok:
 
 #### Install zlapser
 
-	$ wget https://github.com/ziaxdk/zlapser/archive/master.zip
-	$ unzip master.zip
-	$ cd ...
-	$ npm install --production	    # install node dependencies to zlapser. Takes a while.
-	$ sudo npm start 		        # run (or "sudo node server.js")
+	$ wget https://github.com/ziaxdk/zlapser/archive/v1.0.zip
+	$ unzip v1.0.zip
+	$ cd zlapser-1.0
+	$ sudo npm install --production	    # install node dependencies to zlapser. Takes a while.
+	$ sudo npm start 		            # run (or "sudo node server.js")
 
 You should see a message, that server is running. Cancel anytime with twice "ctrl+c"
 
