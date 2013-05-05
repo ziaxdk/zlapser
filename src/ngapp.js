@@ -41,6 +41,7 @@ angular.module('app', [], function ($routeProvider) {
         };
         var socket = io.connect('http://' + window.location.hostname);
         socket.on("zlapser-status", function (data) {
+            console.log("zlapser-status", $rootScope.job);
             $timeout(function () {
                 angular.extend($rootScope.job, data, {
                     isInitial: false,

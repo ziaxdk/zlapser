@@ -116,6 +116,9 @@ To kill the node daemon:
 
 #### Access point configuration
 
+### Tips and tricks
+For good recordings, make sure to set your cammera to fixed shutter/aperture values (M mode), and disable auto whitebalance mode. And of course, use a tripod.
+
 ### Contact
 To contact me, visit [www.ziax.dk](http://ziax.dk/contact)
 

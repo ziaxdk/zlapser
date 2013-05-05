@@ -41,12 +41,12 @@ angular.module('app', [], function ($routeProvider:ng.IRouteProvider) {
         var socket = io.connect('http://' + window.location.hostname);
 
         socket.on("zlapser-status", (data)=> {
+            console.log("zlapser-status", $rootScope.job);
             $timeout(function () {
                 angular.extend($rootScope.job, data, { isInitial: false, blink: true });
                 $timeout(()=> {
                     $rootScope.job.blink = false;
                 }, 250);
-                //console.log("zlapser-status", $rootScope.job);
                 if ($rootScope.job.isRunning)
                     $rootScope.go("running");
             });
