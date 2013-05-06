@@ -4,12 +4,12 @@
     <meta name="google-site-verification" content="0YWTY9dt35x5glLsct0gi5RwI_rRPULqGO-6DH7k6Fg"/>
     <title>Zlapser</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta property="og:type" content="article" />
-    <meta property="og:site_name" content="www.zlapser.net" />
-    <meta property="og:url" content="http://www.zlapser.net" />
-    <meta property="og:title" content="Home made timelapse module for your camera" />
-    <meta property="og:description" content="Use your DSLR and Rasperry Pi to build a time lapser module" />
-    <meta property="og:image" content="http://www.zlapser.net/img/screen2.jpg" />
+    <meta property="og:type" content="article"/>
+    <meta property="og:site_name" content="www.zlapser.net"/>
+    <meta property="og:url" content="http://www.zlapser.net"/>
+    <meta property="og:title" content="Home made timelapse module for your camera"/>
+    <meta property="og:description" content="Use your DSLR and Rasperry Pi to build a time lapser module"/>
+    <meta property="og:image" content="http://www.zlapser.net/img/screen2.jpg"/>
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/font-awesome.min.css" rel="stylesheet">
     <link href="css/app.css" rel="stylesheet">
@@ -78,7 +78,7 @@
         </p>
 
         <div class="text-center">
-            <iframe width="420" height="315" src="http://www.youtube.com/embed/-89zWoQHKok" frameborder="0"
+            <iframe width="680" height="480" src="http://www.youtube.com/embed/-89zWoQHKok" frameborder="0"
                     allowfullscreen></iframe>
             <h5>250 frame / 10 final / 25fps / ffmpeg -r 25 -i img_%04d.jpg -vcodec libx264 movie.mp4</h5>
 
@@ -92,7 +92,7 @@
     <form ng-controller="setup" ng-submit="submit()" novalidate name="setupForm">
         <fieldset>
             <legend>Hardware</legend>
-            <label>Which pin is the "homecooked" circuit attached to <i class="icon-question-sign"
+            <label>Which GPIO is the "homecooked" circuit attached to <i class="icon-question-sign"
                                                                         data-content="The circuit must be attached to the Pi. Select which pin from range 1 to 26"
                                                                         data-toggle="popover"></i></label>
             <input type="number" name="pin" ng-model="model.pin" placeholder="Pin..." class="input-mini" required

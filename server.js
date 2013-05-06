@@ -1,4 +1,5 @@
-var express = require('express'), http = require('http'), proc = require('child_process'), moment = require('moment'), pagedown = require('pagedown'), fs = require('fs'), gpio = require('rpi-gpio');
+var express = require('express'), http = require('http'), proc = require('child_process'), moment = require('moment'), pagedown = require('pagedown'), fs = require('fs'), gp = require("gpio");
+var gpport;
 var model = (function () {
     "use strict";
     var settings = {
@@ -27,7 +28,6 @@ var model = (function () {
     };
     var start = function (req, res) {
         var setupInterval = function () {
-            io.sockets.emit('zlapser-status', job);
             jobId = setInterval(function () {
                 job.currentFrame++;
                 io.sockets.emit('zlapser-status', job);
@@ -35,14 +35,14 @@ var model = (function () {
                     stop(null, null);
                     return;
                 }
-                job.percent = Math.floor((job.currentFrame / job.numOfTotalFrames) * 100);
+                job.percent = (job.currentFrame / job.numOfTotalFrames) * 100;
                 job.time.elapsed = moment.duration(moment().diff(job.time.start)).humanize(false);
                 if(job.isPi) {
-                    gpio.write(settings.pin, 1);
+                    gpport.set();
                 }
                 setTimeout(function () {
                     if(job.isPi) {
-                        gpio.write(settings.pin, 0);
+                        gpport.reset();
                     }
                 }, 100);
             }, job.interval);
@@ -50,8 +50,12 @@ var model = (function () {
         if(jobId === null) {
             setupJob();
             if(job.isPi) {
-                gpio.setup(settings.pin, gpio.DIR_OUT, setupInterval);
+                io.sockets.emit('zlapser-status', job);
+                gpport = gp.export(settings.pin, {
+                    ready: setupInterval
+                });
             } else {
+                console.log("emu gpio setup");
                 setupInterval();
             }
         }
@@ -60,12 +64,14 @@ var model = (function () {
     var stop = function (req, res) {
         if(jobId !== null) {
             clearInterval(jobId);
+            if(job.isPi) {
+                gpport.reset();
+                gpport.unexport();
+            }
             jobId = null;
             job.isRunning = false;
+            job.percent = 100;
             io.sockets.emit('zlapser-status', job);
-            if(job.isPi) {
-                gpio.destroy();
-            }
         }
         if(res) {
             res.send(")]}',\n" + "ok");
@@ -80,15 +86,19 @@ var model = (function () {
         res.send(")]}',\n" + "ok");
     };
     var snap = function (req, res) {
-        if(job.isPi) {
-            gpio.setup(req.body.pin, gpio.DIR_OUT, function () {
-                gpio.write(req.body.pin, 1, function () {
-                    setTimeout(function () {
-                        gpio.write(req.body.pin, 0, function () {
-                            gpio.destroy();
-                        });
-                    }, 100);
-                });
+        if(job.isPi && gpport == null) {
+            gpport = gp.export(req.body.pin, {
+                ready: function () {
+                    console.log("set");
+                    gpport.set(1, function () {
+                        setTimeout(function () {
+                            console.log("reset");
+                            gpport.reset();
+                            gpport.unexport();
+                            gpport = null;
+                        }, 1000);
+                    });
+                }
             });
         }
         res.send(")]}',\n" + "ok");

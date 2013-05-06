@@ -110,7 +110,7 @@ angular.module('app', [], function ($routeProvider:ng.IRouteProvider) {
             fpsErr: function () {
                 return ((this.fintime * this.finrate) / this.optime) > 2;
             },
-            pin: 7
+            pin: 4
         };
     }])
     .filter("EnableDisable", ()=> {
