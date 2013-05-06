@@ -6,7 +6,7 @@ var express = require('express')
     , moment = require('moment')
     , pagedown = require('pagedown')
     , fs = require('fs')
-    , rpio = require("rpio")
+    //, rpio = require("rpio")
     ;
 
 var model = (() => {
