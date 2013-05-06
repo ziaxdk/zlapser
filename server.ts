@@ -6,152 +6,158 @@ var express = require('express')
     , moment = require('moment')
     , pagedown = require('pagedown')
     , fs = require('fs')
-    , gp = require("gpio")
+    , rpio = require("rpio")
     ;
 
-var gpport;
 var model = (() => {
     "use strict";
-    var settings = {};
+    var settings = {},
+        isPaused = false,
+        jobId = null,
+        isPi = false,
 
-    var jobId = null;
-    var job = {
-        isPi: false,
-        isRunning: false,
-        percent: 0,
-        numOfTotalFrames: 0,
-        currentFrame: 0,
-        time: {
-            start: null,
-            elapsed: null
-        }
-    };
+        counter = 0,
+        intervalCallback,
 
-    var setupJob = () => {
-        job.currentFrame = 0;
-        job.percent = 0;
-        job.numOfTotalFrames = settings.fintime * settings.finrate;
-        job.interval = (settings.optime * 1000 / job.numOfTotalFrames);
-        job.isRunning = true;
-        job.time.start = moment();
-        job.time.elapsed = "-";
-        job.time.end = job.time.start.clone().add('seconds', settings.optime);
-    };
-
-    var start = (req, res) => {
-        var setupInterval = ()=> {
-            jobId = setInterval(()=> {
-                job.currentFrame++;
-                io.sockets.emit('zlapser-status', job);
-                if (job.numOfTotalFrames <= job.currentFrame) {
+        job = {
+            isPi: false,
+            isRunning: false,
+            percent: 0,
+            numOfTotalFrames: 0,
+            currentFrame: 0,
+            time: {
+            }
+        },
+        start = (req, res) => {
+            console.log("Starting...")
+            if (jobId !== null) {
+                res.send(")]}',\n" + "err");
+                return;
+            }
+            isPaused = false;
+            counter = 0;
+            job.isRunning = true;
+            job.percent = 0;
+            job.numOfTotalFrames = 0;
+            job.currentFrame = 0;
+            job.time.start = moment();
+            job.time.elapsed = "-";
+            job.time.end = job.time.start.clone().add('seconds', settings.optime);
+            if (isPi) {
+                rpio.setOutput(settings.pin);
+            }
+            jobId = setInterval(function () {
+                if (counter === settings.fintime * settings.finrate) {
                     stop(null, null);
                     return;
                 }
-                job.percent = (job.currentFrame / job.numOfTotalFrames) * 100;
-                job.time.elapsed = moment.duration(moment().diff(job.time.start)).humanize(false);
-
-                if (job.isPi) {
-                    gpport.set();
+                if (isPaused) return;
+                counter++;
+                if (typeof intervalCallback != "function") {
+                    stop(null, null);
+                    return;
                 }
-                setTimeout(()=> {
-                    if (job.isPi) {
-                        gpport.reset();
-                    }
-                }, 100);
-            }, job.interval);
-        };
-
-        if (jobId === null) {
-            setupJob();
-
-            if (job.isPi) {
-                io.sockets.emit('zlapser-status', job);
-                gpport = gp.export(settings.pin, {
-                    ready: setupInterval
-                });
-            } else {
-                console.log("emu gpio setup");
-                setupInterval();
+                job.time.elapsed = moment.duration(moment().diff(job.time.start)).humanize(false);
+                intervalCallback(counter, ((counter / (settings.fintime * settings.finrate)) * 100).toFixed(2));
+            }, (settings.optime / (settings.fintime * settings.finrate)) * 1000);
+            io.sockets.emit('zlapser-status', job);
+            console.log("Started...")
+            res.send(")]}',\n" + "ok");
+        },
+        stop = (req, res) => {
+            console.log("Stopping...")
+            if (jobId === null) {
+                res.send(")]}',\n" + "err");
+                return;
             }
-        }
-        res.send(")]}',\n" + "ok");
-    };
-
-    var stop = (req, res) => {
-        if (jobId !== null) {
             clearInterval(jobId);
-            if (job.isPi) {
-                gpport.reset();
-                gpport.unexport();
-            }
             jobId = null;
             job.isRunning = false;
-            job.percent = 100;
             io.sockets.emit('zlapser-status', job);
-        }
-        if (res) {
+            console.log("Stopped...")
+            if (res)
+                res.send(")]}',\n" + "ok");
+
+
+        },
+        pause = (req, res) => {
+            console.log("Pausing...");
+            if (jobId !== null) {
+                isPaused = !isPaused;
+                console.log("Paused...");
+
+            }
             res.send(")]}',\n" + "ok");
-        }
-    };
 
-    var shutdown = (req, res) => {
-        if (job.isPi) {
-            proc.exec("shutdown -h now", ()=> {
-            }, ()=> {
-            });
-        }
-        res.send(")]}',\n" + "ok");
-    };
-
-    var snap = (req, res) => {
-        if (job.isPi && gpport == null) {
-            gpport = gp.export(req.body.pin, {
-                ready: () => {
-                    console.log("set");
-                    gpport.set(1, ()=> {
-                        setTimeout(()=> {
-                            console.log("reset");
-
-                            gpport.reset();
-                            gpport.unexport();
-                            gpport = null;
-
-                        }, 1000);
-                    });
-
-                }
-            });
-
-
-        }
-        res.send(")]}',\n" + "ok");
-    };
-
-    return {
-        job: job,
-        data: (req, res) => {
+        },
+        setupZlapser = (req, res) => {
             settings = req.body;
             res.send(")]}',\n" + "ok");
         },
+        snap = (req, res) => {
+            rpio.setOutput(req.body.pin);
+            shutter(req.body.pin);
+            res.send(")]}',\n" + "ok");
+
+        },
+        shutter = (pin) => {
+            rpio.write(pin, rpio.HIGH);
+            setTimeout(() => {
+                rpio.write(pin, rpio.LOW);
+            }, 100);
+
+        },
+        shutdown = (req, res) => {
+            if (isPi) {
+                proc.exec("shutdown -h now", ()=> {
+                }, ()=> {
+                });
+            }
+            res.send(")]}',\n" + "ok");
+        },
+        scriptPi = (counter, percent) => {
+            console.log("Pi", "c:", counter, "p:", percent);
+            job.percent = percent;
+            job.numOfTotalFrames = settings.fintime * settings.finrate;
+            job.currentFrame = counter;
+            io.sockets.emit('zlapser-status', job);
+            shutter(settings.pin);
+        },
+        scriptNonPi = (counter, percent) => {
+            console.log("NonPi", "c:", counter, "p:", percent);
+            job.percent = percent;
+            job.numOfTotalFrames = settings.fintime * settings.finrate;
+            job.currentFrame = counter;
+            io.sockets.emit('zlapser-status', job);
+        },
+        setScript = (exists) => {
+            job.isPi = isPi = exists;
+            intervalCallback = exists ? scriptPi : scriptNonPi;
+        };
+
+
+    return {
+        isPi: isPi,
+        job: job,
         start: start,
         stop: stop,
-        shutdown: shutdown,
+        pause: pause,
+        setupZlapser: setupZlapser,
         snap: snap,
-        pause: (req, res) => {
-
-        }
+        shutdown: shutdown,
+        setScript: setScript
     }
 
-})
-    ();
+})();
 
 
 var app = express();
 var theServer = http.createServer(app);
 var io = require('socket.io').listen(theServer);
 
+
 app.use(express.bodyParser());
-app.post("/data", model.data);
+app.post("/data", model.setupZlapser);
 app.post("/start", model.start);
 app.post("/stop", model.stop);
 app.post("/pause", model.pause);
@@ -173,10 +179,8 @@ io.sockets.on('connection', (socket) => {
     socket.emit('zlapser-status', model.job);
 });
 fs.exists("/sys/class/gpio", (exists)=> {
-    model.job.isPi = exists;
-    //model.job.isPi = true;
+    model.setScript(exists);
 });
-
 
 app.configure('development', ()=> {
     io.set('log level', 1); // reduce logging

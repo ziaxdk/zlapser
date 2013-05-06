@@ -30,10 +30,6 @@ angular.module('app', [], function ($routeProvider:ng.IRouteProvider) {
         };
 
         $rootScope.job = {
-            isInitial: true,
-            time: {
-                elapsed: 0
-            }
         };
 
         //$rootScope.model = model;
@@ -41,9 +37,10 @@ angular.module('app', [], function ($routeProvider:ng.IRouteProvider) {
         var socket = io.connect('http://' + window.location.hostname);
 
         socket.on("zlapser-status", (data)=> {
-            console.log("zlapser-status", $rootScope.job);
             $timeout(function () {
-                angular.extend($rootScope.job, data, { isInitial: false, blink: true });
+                angular.extend($rootScope.job, data, { blink: true });
+                console.log("zlapser-status", $rootScope.job, data);
+
                 $timeout(()=> {
                     $rootScope.job.blink = false;
                 }, 250);
@@ -76,7 +73,9 @@ angular.module('app', [], function ($routeProvider:ng.IRouteProvider) {
     }])
     .controller("review", ["$scope", "$rootScope", "$http", ($scope, $rootScope, $http)=> {
         $scope.startJob = ()=> {
-            $http.post("/start");
+            $http.post("/start").success(()=>{
+                $scope.go("running");
+            });
         };
     }])
     .controller("running", ["$scope", "$http", "SetupModel", ($scope, $http, model:ISetupModel)=> {
@@ -110,7 +109,7 @@ angular.module('app', [], function ($routeProvider:ng.IRouteProvider) {
             fpsErr: function () {
                 return ((this.fintime * this.finrate) / this.optime) > 2;
             },
-            pin: 4
+            pin: 7
         };
     }])
     .filter("EnableDisable", ()=> {

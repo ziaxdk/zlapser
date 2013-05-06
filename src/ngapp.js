@@ -34,19 +34,14 @@ angular.module('app', [], function ($routeProvider) {
             $location.path(url);
         };
         $rootScope.job = {
-            isInitial: true,
-            time: {
-                elapsed: 0
-            }
         };
         var socket = io.connect('http://' + window.location.hostname);
         socket.on("zlapser-status", function (data) {
-            console.log("zlapser-status", $rootScope.job);
             $timeout(function () {
                 angular.extend($rootScope.job, data, {
-                    isInitial: false,
                     blink: true
                 });
+                console.log("zlapser-status", $rootScope.job, data);
                 $timeout(function () {
                     $rootScope.job.blink = false;
                 }, 250);
@@ -90,7 +85,9 @@ angular.module('app', [], function ($routeProvider) {
     "$http", 
     function ($scope, $rootScope, $http) {
         $scope.startJob = function () {
-            $http.post("/start");
+            $http.post("/start").success(function () {
+                $scope.go("running");
+            });
         };
     }]).controller("running", [
     "$scope", 
@@ -129,7 +126,7 @@ angular.module('app', [], function ($routeProvider) {
             fpsErr: function () {
                 return ((this.fintime * this.finrate) / this.optime) > 2;
             },
-            pin: 4
+            pin: 7
         };
     }]).filter("EnableDisable", function () {
     return function (input) {
