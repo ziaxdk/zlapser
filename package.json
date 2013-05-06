@@ -4,12 +4,12 @@
   "homepage": "http://www.ziax.dk",
   "dependencies": {
     "express": "3.1.1",
-    "rpio": "0.0.4",
     "socket.io": "0.9.14",
     "moment": "2.0.0",
     "pagedown": "1.1.0"
   },
   "devDependencies": {
+    "rpio": "0.0.4",
     "grunt": "~0.4.1",
     "grunt-contrib-nodeunit": "~0.1.2",
     "grunt-contrib-uglify": "~0.2.0",
