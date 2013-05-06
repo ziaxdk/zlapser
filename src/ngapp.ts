@@ -39,7 +39,7 @@ angular.module('app', [], function ($routeProvider:ng.IRouteProvider) {
         socket.on("zlapser-status", (data)=> {
             $timeout(function () {
                 angular.extend($rootScope.job, data, { blink: true });
-                console.log("zlapser-status", $rootScope.job, data);
+                //console.log("zlapser-status", $rootScope.job, data);
 
                 $timeout(()=> {
                     $rootScope.job.blink = false;

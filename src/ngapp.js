@@ -41,7 +41,6 @@ angular.module('app', [], function ($routeProvider) {
                 angular.extend($rootScope.job, data, {
                     blink: true
                 });
-                console.log("zlapser-status", $rootScope.job, data);
                 $timeout(function () {
                     $rootScope.job.blink = false;
                 }, 250);
