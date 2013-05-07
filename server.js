@@ -1,4 +1,4 @@
-var express = require('express'), http = require('http'), proc = require('child_process'), moment = require('moment'), pagedown = require('pagedown'), fs = require('fs');
+var express = require('express'), http = require('http'), proc = require('child_process'), moment = require('moment'), pagedown = require('pagedown'), fs = require('fs'), gpio = require('rpi-gpio');
 var model = (function () {
     "use strict";
     var settings = {

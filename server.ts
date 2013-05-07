@@ -6,8 +6,7 @@ var express = require('express')
     , moment = require('moment')
     , pagedown = require('pagedown')
     , fs = require('fs')
-    //, rpio = require("rpio")
-//    gpio = require("pi-gpio")
+    , gpio = require('rpi-gpio')
     ;
 
 var model = (() => {
@@ -97,21 +96,12 @@ var model = (() => {
             res.send(")]}',\n" + "ok");
         },
         snap = (req, res) => {
-//            var Gpio = require('onoff').Gpio, // Constructor function for Gpio objects.
-//                led = new Gpio(4, 'out');            //rpio.setOutput(req.body.pin);
             shutter(req.body.pin);
             console.log("done", req.body.pin);
             res.send(")]}',\n" + "ok");
 
         },
         shutter = (pin) => {
-            /*var pin = new Gpio(pin, 'out');
-            pin.write(1, (err)=>{});
-            setTimeout(() => {
-                pin.write(0, (err)=>{});
-                pin.unexport();
-
-            }, 100);*/
         },
         shutdown = (req, res) => {
             if (isPi) {
@@ -137,7 +127,6 @@ var model = (() => {
         setScript = (exists) => {
             job.isPi = isPi = exists;
             intervalCallback = exists ? scriptPi : scriptNonPi;
-//            Gpio = require('onoff').Gpio;
         };
 
 
