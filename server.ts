@@ -5,8 +5,9 @@ var express = require('express')
     , proc = require('child_process')
     , moment = require('moment')
     , pagedown = require('pagedown')
-    , fs = require('fs')
+    , fs = require('fs'),
     //, rpio = require("rpio")
+    gpio = require("pi-gpio")
     ;
 
 var model = (() => {
@@ -95,8 +96,13 @@ var model = (() => {
             res.send(")]}',\n" + "ok");
         },
         snap = (req, res) => {
-            rpio.setOutput(req.body.pin);
-            shutter(req.body.pin);
+            gpio.open(7, "output", function(err) {        // Open pin 16 for output
+                gpio.write(7, 1, function() {            // Set pin 16 high (1)
+                    gpio.close(7);                        // Close pin 16
+                });
+            });
+            //rpio.setOutput(req.body.pin);
+            //shutter(req.body.pin);
             res.send(")]}',\n" + "ok");
 
         },

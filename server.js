@@ -1,4 +1,4 @@
-var express = require('express'), http = require('http'), proc = require('child_process'), moment = require('moment'), pagedown = require('pagedown'), fs = require('fs');
+var express = require('express'), http = require('http'), proc = require('child_process'), moment = require('moment'), pagedown = require('pagedown'), fs = require('fs'), gpio = require("pi-gpio");
 var model = (function () {
     "use strict";
     var settings = {
@@ -25,7 +25,9 @@ res.send(")]}',\n" + "ok");
 console.log("Pausing...");if(jobId !== null) {
 isPaused = !isPaused;console.log("Paused...");        }res.send(")]}',\n" + "ok");    }, setupZlapser = function (req, res) {
 settings = req.body;res.send(")]}',\n" + "ok");    }, snap = function (req, res) {
-rpio.setOutput(req.body.pin);shutter(req.body.pin);res.send(")]}',\n" + "ok");    }, shutter = function (pin) {
+gpio.open(7, "output", function (err) {
+gpio.write(7, 1, function () {
+gpio.close(7);            });        });res.send(")]}',\n" + "ok");    }, shutter = function (pin) {
 rpio.write(pin, rpio.HIGH);setTimeout(function () {
 rpio.write(pin, rpio.LOW);        }, 100);    }, shutdown = function (req, res) {
 if(isPi) {
