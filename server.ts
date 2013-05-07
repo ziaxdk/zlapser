@@ -105,21 +105,18 @@ var model = (() => {
 
         },
         shutter = (pin) => {
-            var pin = new Gpio(pin, 'out');
-            pin.writeSync(0);
-
-            /*pin.write(1, (err)=>console.log(err));
+            /*var pin = new Gpio(pin, 'out');
+            pin.write(1, (err)=>{});
             setTimeout(() => {
                 pin.write(0, (err)=>{});
-            }, 100);*/
-            pin.unexport();
+                pin.unexport();
 
+            }, 100);*/
+            res.send(")]}',\n" + "ok");
         },
         shutdown = (req, res) => {
             if (isPi) {
-                proc.exec("shutdown -h now", ()=> {
-                }, ()=> {
-                });
+                proc.exec("shutdown -h now");
             }
             res.send(")]}',\n" + "ok");
         },
@@ -141,7 +138,7 @@ var model = (() => {
         setScript = (exists) => {
             job.isPi = isPi = exists;
             intervalCallback = exists ? scriptPi : scriptNonPi;
-            Gpio = require('onoff').Gpio;
+//            Gpio = require('onoff').Gpio;
         };
 
 
