@@ -31,14 +31,8 @@ isPaused = !isPaused;console.log("Paused...");        }res.send(")]}',\n" + "ok"
 settings = req.body;res.send(")]}',\n" + "ok");    }, snap = function (req, res) {
 gpio.setup(req.body.pin, gpio.DIR_OUT, function () {
 shutter(req.body.pin);        });gpio.destroy();res.send(")]}',\n" + "ok");    }, shutter = function (pin) {
-gpio.write(pin, true, function (err) {
-if(err) {
-throw err;
-            }setTimeout(function () {
-gpio.write(pin, false, function (err) {
-if(err) {
-throw err;
-                    }                });            }, 100);        });    }, shutdown = function (req, res) {
+gpio.write(pin, true);setTimeout(function () {
+gpio.write(pin, false);        }, 100);    }, shutdown = function (req, res) {
 if(isPi) {
 proc.exec("shutdown -h now");        }res.send(")]}',\n" + "ok");    }, scriptPi = function (counter, percent) {
 console.log("Pi", "c:", counter, "p:", percent);job.percent = percent;job.numOfTotalFrames = settings.fintime * settings.finrate;job.currentFrame = counter;io.sockets.emit('zlapser-status', job);shutter(settings.pin);    }, scriptNonPi = function (counter, percent) {

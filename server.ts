@@ -111,14 +111,10 @@ var model = (() => {
             res.send(")]}',\n" + "ok");
         },
         shutter = (pin) => {
-            gpio.write(pin, true, function (err) {
-                if (err) throw err;
-                setTimeout(()=> {
-                    gpio.write(pin, false, function (err) {
-                        if (err) throw err;
-                    });
-                }, 100);
-            });
+            gpio.write(pin, true);
+            setTimeout(()=> {
+                gpio.write(pin, false);
+            }, 100);
 
         },
         shutdown = (req, res) => {
