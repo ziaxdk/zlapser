@@ -1,4 +1,4 @@
-var express = require('express'), http = require('http'), proc = require('child_process'), moment = require('moment'), pagedown = require('pagedown'), fs = require('fs'), gpio = require("pi-gpio");
+var express = require('express'), http = require('http'), proc = require('child_process'), moment = require('moment'), pagedown = require('pagedown'), fs = require('fs');
 var model = (function () {
     "use strict";
     var settings = {
@@ -12,7 +12,7 @@ time: {
         }    }, start = function (req, res) {
 console.log("Starting...");if(jobId !== null) {
 res.send(")]}',\n" + "err");return;        }isPaused = false;counter = 0;job.isRunning = true;job.percent = 0;job.numOfTotalFrames = 0;job.currentFrame = 0;job.time.start = moment();job.time.elapsed = "-";job.time.end = job.time.start.clone().add('seconds', settings.optime);if(isPi) {
-rpio.setOutput(settings.pin);        }jobId = setInterval(function () {
+        }jobId = setInterval(function () {
 if(counter === settings.fintime * settings.finrate) {
 stop(null, null);return;            }if(isPaused) {
 return;
@@ -26,7 +26,7 @@ console.log("Pausing...");if(jobId !== null) {
 isPaused = !isPaused;console.log("Paused...");        }res.send(")]}',\n" + "ok");    }, setupZlapser = function (req, res) {
 settings = req.body;res.send(")]}',\n" + "ok");    }, snap = function (req, res) {
 shutter(req.body.pin);console.log("done", req.body.pin);res.send(")]}',\n" + "ok");    }, shutter = function (pin) {
-res.send(")]}',\n" + "ok");    }, shutdown = function (req, res) {
+    }, shutdown = function (req, res) {
 if(isPi) {
 proc.exec("shutdown -h now");        }res.send(")]}',\n" + "ok");    }, scriptPi = function (counter, percent) {
 console.log("Pi", "c:", counter, "p:", percent);job.percent = percent;job.numOfTotalFrames = settings.fintime * settings.finrate;job.currentFrame = counter;io.sockets.emit('zlapser-status', job);shutter(settings.pin);    }, scriptNonPi = function (counter, percent) {

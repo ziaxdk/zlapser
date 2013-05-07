@@ -5,9 +5,9 @@ var express = require('express')
     , proc = require('child_process')
     , moment = require('moment')
     , pagedown = require('pagedown')
-    , fs = require('fs'),
+    , fs = require('fs')
     //, rpio = require("rpio")
-    gpio = require("pi-gpio")
+//    gpio = require("pi-gpio")
     ;
 
 var model = (() => {
@@ -46,7 +46,7 @@ var model = (() => {
             job.time.elapsed = "-";
             job.time.end = job.time.start.clone().add('seconds', settings.optime);
             if (isPi) {
-                rpio.setOutput(settings.pin);
+//                rpio.setOutput(settings.pin);
             }
             jobId = setInterval(function () {
                 if (counter === settings.fintime * settings.finrate) {
@@ -112,7 +112,6 @@ var model = (() => {
                 pin.unexport();
 
             }, 100);*/
-            res.send(")]}',\n" + "ok");
         },
         shutdown = (req, res) => {
             if (isPi) {
