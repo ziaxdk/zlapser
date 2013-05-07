@@ -9,24 +9,36 @@ percent: 0,
 numOfTotalFrames: 0,
 currentFrame: 0,
 time: {
-        }    }, start = function (req, res) {
-console.log("Starting...");if(jobId !== null) {
-res.send(")]}',\n" + "err");return;        }isPaused = false;counter = 0;job.isRunning = true;job.percent = 0;job.numOfTotalFrames = 0;job.currentFrame = 0;job.time.start = moment();job.time.elapsed = "-";job.time.end = job.time.start.clone().add('seconds', settings.optime);if(isPi) {
-        }jobId = setInterval(function () {
+        }    }, setupJob = function () {
+jobId = setInterval(function () {
 if(counter === settings.fintime * settings.finrate) {
-stop(null, null);return;            }if(isPaused) {
+setTimeout(function () {
+stop(null, null);                }, 250);return;            }if(isPaused) {
 return;
             }counter++;if(typeof intervalCallback != "function") {
-stop(null, null);return;            }job.time.elapsed = moment.duration(moment().diff(job.time.start)).humanize(false);intervalCallback(counter, ((counter / (settings.fintime * settings.finrate)) * 100).toFixed(2));        }, (settings.optime / (settings.fintime * settings.finrate)) * 1000);io.sockets.emit('zlapser-status', job);console.log("Started...");res.send(")]}',\n" + "ok");    }, stop = function (req, res) {
+stop(null, null);return;            }job.time.elapsed = moment.duration(moment().diff(job.time.start)).humanize(false);intervalCallback(counter, ((counter / (settings.fintime * settings.finrate)) * 100).toFixed(2));        }, (settings.optime / (settings.fintime * settings.finrate)) * 1000);io.sockets.emit('zlapser-status', job);    }, start = function (req, res) {
+console.log("Starting...");if(jobId !== null) {
+res.send(")]}',\n" + "err");return;        }isPaused = false;counter = 0;job.isRunning = true;job.percent = 0;job.numOfTotalFrames = 0;job.currentFrame = 0;job.time.start = moment();job.time.elapsed = "-";job.time.end = job.time.start.clone().add('seconds', settings.optime);if(isPi) {
+gpio.setup(settings.pin, gpio.DIR_OUT, function () {
+            });setupJob();        } else {
+setupJob();        }console.log("Started...");res.send(")]}',\n" + "ok");    }, stop = function (req, res) {
 console.log("Stopping...");if(jobId === null) {
-res.send(")]}',\n" + "err");return;        }clearInterval(jobId);jobId = null;job.isRunning = false;io.sockets.emit('zlapser-status', job);console.log("Stopped...");if(res) {
+res.send(")]}',\n" + "err");return;        }clearInterval(jobId);jobId = null;job.isRunning = false;gpio.destroy();io.sockets.emit('zlapser-status', job);console.log("Stopped...");if(res) {
 res.send(")]}',\n" + "ok");
         }    }, pause = function (req, res) {
 console.log("Pausing...");if(jobId !== null) {
 isPaused = !isPaused;console.log("Paused...");        }res.send(")]}',\n" + "ok");    }, setupZlapser = function (req, res) {
 settings = req.body;res.send(")]}',\n" + "ok");    }, snap = function (req, res) {
-shutter(req.body.pin);console.log("done", req.body.pin);res.send(")]}',\n" + "ok");    }, shutter = function (pin) {
-    }, shutdown = function (req, res) {
+gpio.setup(req.body.pin, gpio.DIR_OUT, function () {
+shutter(req.body.pin);        });gpio.destroy();res.send(")]}',\n" + "ok");    }, shutter = function (pin) {
+gpio.write(pin, true, function (err) {
+if(err) {
+throw err;
+            }setTimeout(function () {
+gpio.write(pin, false, function (err) {
+if(err) {
+throw err;
+                    }                });            }, 100);        });    }, shutdown = function (req, res) {
 if(isPi) {
 proc.exec("shutdown -h now");        }res.send(")]}',\n" + "ok");    }, scriptPi = function (counter, percent) {
 console.log("Pi", "c:", counter, "p:", percent);job.percent = percent;job.numOfTotalFrames = settings.fintime * settings.finrate;job.currentFrame = counter;io.sockets.emit('zlapser-status', job);shutter(settings.pin);    }, scriptNonPi = function (counter, percent) {

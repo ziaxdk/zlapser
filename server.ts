@@ -29,6 +29,25 @@ var model = (() => {
             time: {
             }
         },
+        setupJob = () => {
+            jobId = setInterval(function () {
+                if (counter === settings.fintime * settings.finrate) {
+                    setTimeout(() => {
+                        stop(null, null);
+                    }, 250);
+                    return;
+                }
+                if (isPaused) return;
+                counter++;
+                if (typeof intervalCallback != "function") {
+                    stop(null, null);
+                    return;
+                }
+                job.time.elapsed = moment.duration(moment().diff(job.time.start)).humanize(false);
+                intervalCallback(counter, ((counter / (settings.fintime * settings.finrate)) * 100).toFixed(2));
+            }, (settings.optime / (settings.fintime * settings.finrate)) * 1000);
+            io.sockets.emit('zlapser-status', job);
+        },
         start = (req, res) => {
             console.log("Starting...")
             if (jobId !== null) {
@@ -45,23 +64,14 @@ var model = (() => {
             job.time.elapsed = "-";
             job.time.end = job.time.start.clone().add('seconds', settings.optime);
             if (isPi) {
-//                rpio.setOutput(settings.pin);
+                gpio.setup(settings.pin, gpio.DIR_OUT, ()=> {
+                });
+                setupJob();
+
             }
-            jobId = setInterval(function () {
-                if (counter === settings.fintime * settings.finrate) {
-                    stop(null, null);
-                    return;
-                }
-                if (isPaused) return;
-                counter++;
-                if (typeof intervalCallback != "function") {
-                    stop(null, null);
-                    return;
-                }
-                job.time.elapsed = moment.duration(moment().diff(job.time.start)).humanize(false);
-                intervalCallback(counter, ((counter / (settings.fintime * settings.finrate)) * 100).toFixed(2));
-            }, (settings.optime / (settings.fintime * settings.finrate)) * 1000);
-            io.sockets.emit('zlapser-status', job);
+            else {
+                setupJob();
+            }
             console.log("Started...")
             res.send(")]}',\n" + "ok");
         },
@@ -74,19 +84,17 @@ var model = (() => {
             clearInterval(jobId);
             jobId = null;
             job.isRunning = false;
+            gpio.destroy();
             io.sockets.emit('zlapser-status', job);
             console.log("Stopped...")
             if (res)
                 res.send(")]}',\n" + "ok");
-
-
         },
         pause = (req, res) => {
             console.log("Pausing...");
             if (jobId !== null) {
                 isPaused = !isPaused;
                 console.log("Paused...");
-
             }
             res.send(")]}',\n" + "ok");
 
@@ -96,12 +104,22 @@ var model = (() => {
             res.send(")]}',\n" + "ok");
         },
         snap = (req, res) => {
-            shutter(req.body.pin);
-            console.log("done", req.body.pin);
+            gpio.setup(req.body.pin, gpio.DIR_OUT, ()=> {
+                shutter(req.body.pin);
+            });
+            gpio.destroy();
             res.send(")]}',\n" + "ok");
-
         },
         shutter = (pin) => {
+            gpio.write(pin, true, function (err) {
+                if (err) throw err;
+                setTimeout(()=> {
+                    gpio.write(pin, false, function (err) {
+                        if (err) throw err;
+                    });
+                }, 100);
+            });
+
         },
         shutdown = (req, res) => {
             if (isPi) {
