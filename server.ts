@@ -16,6 +16,7 @@ var model = (() => {
         isPaused = false,
         jobId = null,
         isPi = false,
+        Gpio,
 
         counter = 0,
         intervalCallback,
@@ -96,21 +97,22 @@ var model = (() => {
             res.send(")]}',\n" + "ok");
         },
         snap = (req, res) => {
-            gpio.open(7, "output", function(err) {        // Open pin 16 for output
-                gpio.write(7, 1, function() {            // Set pin 16 high (1)
-                    gpio.close(7);                        // Close pin 16
-                });
-            });
-            //rpio.setOutput(req.body.pin);
-            //shutter(req.body.pin);
+//            var Gpio = require('onoff').Gpio, // Constructor function for Gpio objects.
+//                led = new Gpio(4, 'out');            //rpio.setOutput(req.body.pin);
+            shutter(req.body.pin);
+            console.log("done", req.body.pin);
             res.send(")]}',\n" + "ok");
 
         },
         shutter = (pin) => {
-            rpio.write(pin, rpio.HIGH);
+            var pin = new Gpio(pin, 'out');
+            pin.writeSync(0);
+
+            /*pin.write(1, (err)=>console.log(err));
             setTimeout(() => {
-                rpio.write(pin, rpio.LOW);
-            }, 100);
+                pin.write(0, (err)=>{});
+            }, 100);*/
+            pin.unexport();
 
         },
         shutdown = (req, res) => {
@@ -139,6 +141,7 @@ var model = (() => {
         setScript = (exists) => {
             job.isPi = isPi = exists;
             intervalCallback = exists ? scriptPi : scriptNonPi;
+            Gpio = require('onoff').Gpio;
         };
 
 

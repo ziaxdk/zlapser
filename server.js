@@ -2,7 +2,7 @@ var express = require('express'), http = require('http'), proc = require('child_
 var model = (function () {
     "use strict";
     var settings = {
-    }, isPaused = false, jobId = null, isPi = false, counter = 0, intervalCallback, job = {
+    }, isPaused = false, jobId = null, isPi = false, Gpio, counter = 0, intervalCallback, job = {
 isPi: false,
 isRunning: false,
 percent: 0,
@@ -25,18 +25,19 @@ res.send(")]}',\n" + "ok");
 console.log("Pausing...");if(jobId !== null) {
 isPaused = !isPaused;console.log("Paused...");        }res.send(")]}',\n" + "ok");    }, setupZlapser = function (req, res) {
 settings = req.body;res.send(")]}',\n" + "ok");    }, snap = function (req, res) {
-gpio.open(7, "output", function (err) {
-gpio.write(7, 1, function () {
-gpio.close(7);            });        });res.send(")]}',\n" + "ok");    }, shutter = function (pin) {
-rpio.write(pin, rpio.HIGH);setTimeout(function () {
-rpio.write(pin, rpio.LOW);        }, 100);    }, shutdown = function (req, res) {
+shutter(req.body.pin);console.log("done", req.body.pin);res.send(")]}',\n" + "ok");    }, shutter = function (pin) {
+pin = new Gpio(pin, 'out'), pin.writeSync(0);pin.unexport();    }, shutdown = function (req, res) {
 if(isPi) {
 proc.exec("shutdown -h now", function () {
             }, function () {
             });        }res.send(")]}',\n" + "ok");    }, scriptPi = function (counter, percent) {
 console.log("Pi", "c:", counter, "p:", percent);job.percent = percent;job.numOfTotalFrames = settings.fintime * settings.finrate;job.currentFrame = counter;io.sockets.emit('zlapser-status', job);shutter(settings.pin);    }, scriptNonPi = function (counter, percent) {
-console.log("NonPi", "c:", counter, "p:", percent);job.percent = percent;job.numOfTotalFrames = settings.fintime * settings.finrate;job.currentFrame = counter;io.sockets.emit('zlapser-status', job);    }, setScript = function (exists) {
-job.isPi = isPi = exists;intervalCallback = exists ? scriptPi : scriptNonPi;    };
+console.log("NonPi", "c:", counter, "p:", percent);job.percent = percent;job.numOfTotalFrames = settings.fintime * settings.finrate;job.currentFrame = counter;io.sockets.emit('zlapser-status', job);    };
+    var setScript = function (exists) {
+        job.isPi = isPi = exists;
+        intervalCallback = exists ? scriptPi : scriptNonPi;
+        Gpio = require('onoff').Gpio;
+    };
     return {
         isPi: isPi,
         job: job,
