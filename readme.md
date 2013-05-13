@@ -1,4 +1,4 @@
-[http://www.zlapser.net](http://www.zlapser.net)
+Site: [http://www.zlapser.net](http://www.zlapser.net)
 
 # Camera - Canon 20D
 My camera is an oldie: [Canon 20D](http://www.dpreview.com/reviews/canoneos20d) and the remote shutter is uncommon. Look [here](http://www.doc-diy.net/photo/remote_pinout/#canon), but I found a cheap remote shutter at dealextreme.com. I bought [this](http://dx.com/p/rs-80n3-remote-shutter-switch-for-canon-dslr-camera-118865) and [this](http://dx.com/p/wired-remote-shutter-for-canon-109cm-length-72104). Both tested ok on the 20D.
@@ -115,6 +115,91 @@ To kill the node daemon:
 	$ sudo killall node
 
 #### Access point configuration
+Finally my wifi dongle arrived from Hong Kong. I bought [this](http://dx.com/p/mini-usb-2-4ghz-150mbps-802-11b-g-n-wifi-wireless-network-card-adapter-black-120933), which has this RT5370 chipset and it's supported by ["nl80211"](http://wireless.kernel.org/en/developers/Documentation/nl80211). I pretty much followed this guide to get access point running: [http://www.elinux.org/RPI-Wireless-Hotspot](http://www.elinux.org/RPI-Wireless-Hotspot)
+
+First install the packages required to run hot spot
+
+    $ sudo apt-get install hostapd udhcpd   # Installs dhcp and hostap servers
+
+Configure udhcpd (dhcp server)
+
+    $ sudo nano /etc/udhcpd.conf
+
+Lots of informaion in the file: Ignore most of it and change/add the following:
+
+    start 10.11.12.14           # range start address of dhcp
+    end 10.11.12.20             # range end address of dhcp
+    interface wlan0             # assign dhcp to interface wlan0
+    opt subnet 255.255.255.128  # network
+    opt router 10.11.12.13      # The wlan0 ip address
+
+Next
+
+     $ sudo nano /etc/default/udhcpd
+
+Enable dhcp by comment this line
+
+    #DHCPD_ENABLED="no"         # the # means ignore/comment
+
+
+Assign IP address for wlan0
+
+    $ sudo nano /etc/network/interfaces
+
+Add
+
+    iface wlan0 inet static
+    address 10.11.12.13
+    netmask 255.255.255.128
+    auto wlan0
+
+Next configure hostapd - the access point
+
+    $ sudo nano /etc/hostapd/hostapd.conf
+
+For an open network with no security enter this:
+
+    interface=wlan0
+    driver=nl80211
+    ssid=www.zlapser.net        # SSID of network
+    hw_mode=g
+    channel=6
+    auth_algs=1
+    wmm_enabled=0
+
+To enable a secure network add this with the above:
+
+    wpa=2
+    wpa_passphrase=zlapser!     # MUST be at least 8 characters
+    wpa_key_mgmt=WPA-PSK
+    wpa_pairwise=TKIP
+    rsn_pairwise=CCMP
+
+To test the configuration and check it works:
+
+    $ sudo hostapd -dd /etc/hostapd/hostapd.conf     # dd lots of debug info
+
+Finally before you can run it as a service:
+
+    $ sudo /etc/default/hostapd
+
+Change to this:
+
+    DAEMON_CONF="/etc/hostapd/hostapd.conf"
+
+Run it as a service and start dhcp as a service
+
+    $ sudo service hostapd start
+    $ sudo service udhcpd start
+
+NOw you should be able to connect to the pi access point. :-)
+
+
+
+
+## Browser support
+
+The stock browser on Android (mine is v4.03) doesn't support webswockets, which ZLapser uses for feedback to the UI. Install Chrome for Android. More info here [http://caniuse.com/websockets](http://caniuse.com/websockets)
 
 ### Tips and tricks
 For good recordings, make sure to set your cammera to fixed shutter/aperture values (M mode), and disable auto whitebalance mode. And of course, use a tripod.

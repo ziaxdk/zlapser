@@ -30,9 +30,26 @@
     <div class="row-fluid">
         <div class="span12">
             <div ng-view ng-animate="{enter: 'view-enter'}"></div>
+            <div class="text-center"><a href="https://twitter.com/share" class="twitter-share-button" data-via="ziaxdk"
+                                        data-hashtags="zlapser">Tweet</a>
+                <script>!function (d, s, id) {
+                    var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https';
+                    if (!d.getElementById(id)) {
+                        js = d.createElement(s);
+                        js.id = id;
+                        js.src = p + '://platform.twitter.com/widgets.js';
+                        fjs.parentNode.insertBefore(js, fjs);
+                    }
+                }(document, 'script', 'twitter-wjs');</script>
+
+
+                <iframe src="//www.facebook.com/plugins/like.php?href=http%3A%2F%2Fwww.zlapser.net&amp;send=false&amp;layout=button_count&amp;width=450&amp;show_faces=true&amp;font&amp;colorscheme=light&amp;action=like&amp;height=21&amp;appId=273860242666552"
+                        scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:80px; height:21px;"
+                        allowTransparency="true"></iframe>
+
+            </div>
         </div>
     </div>
-    <hr>
     <footer>
         <p>&copy; ZIAX - <a href="http://www.ziax.dk" target="_blank">www.ziax.dk</a> 2013 <i ng-show="job.isInitial"
                                                                                               class="icon-spinner icon-spin"></i>
@@ -72,8 +89,9 @@
                 ng-show="job.isPi">start</span><span ng-hide="job.isPi">preview</span> &raquo;</a></p>
 
         <p class="text-center">
-            <a ng-click="go('about')" class="btn btn-link">
-                Click for readme.md</a><a href="https://github.com/ziaxdk/zlapser" target="_blank" class="btn btn-link">View
+            <a ng-click="go('about')" class="btn btn-link"><i class="icon-lightbulb"></i>
+                Click for readme.md</a><a href="https://github.com/ziaxdk/zlapser" target="_blank" class="btn btn-link"><i
+                class="icon-github"></i> View
             on Github</a>
 
         </p>
@@ -94,8 +112,8 @@
         <fieldset>
             <legend>Hardware</legend>
             <label>Which GPIO is the "homecooked" circuit attached to <i class="icon-question-sign"
-                                                                        data-content="The circuit must be attached to the Pi. Select which pin from range 1 to 26"
-                                                                        data-toggle="popover"></i></label>
+                                                                         data-content="The circuit must be attached to the Pi. Select which pin from range 1 to 26"
+                                                                         data-toggle="popover"></i></label>
             <input type="number" name="pin" ng-model="model.pin" placeholder="Pin..." class="input-mini" required
                    min="1"
                    max="26"/> <input type="button" class="btn btn-small" style="Margin-top:-10px;" ng-click="snap()"
