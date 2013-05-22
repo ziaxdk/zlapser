@@ -1,0 +1,12 @@
+
+case "$1" in start)
+        echo "Starting zlapser..."
+        exec /usr/local/bin/node /home/pi/zlapser-1.0/server.js >> /var/log/node.log &
+        ;;
+  stop)
+        echo "Stopping zlapser..."
+        exec killall node >> /var/log/node.log
+        ;;
+esac
+
+exit 0

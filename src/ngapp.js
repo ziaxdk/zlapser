@@ -33,8 +33,14 @@ angular.module('app', [], function ($routeProvider) {
         $rootScope.go = function (url) {
             $location.path(url);
         };
+        $rootScope.iframes = '';
         $rootScope.job = {
         };
+        $rootScope.$watch('job.isPi', function (n, o) {
+            if(!n) {
+                $rootScope.iframes = "youtube1.tmpl";
+            }
+        });
         var socket = io.connect('http://' + window.location.hostname);
         socket.on("zlapser-status", function (data) {
             $timeout(function () {

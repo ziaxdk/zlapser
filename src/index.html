@@ -30,24 +30,6 @@
     <div class="row-fluid">
         <div class="span12">
             <div ng-view ng-animate="{enter: 'view-enter'}"></div>
-            <div class="text-center"><a href="https://twitter.com/share" class="twitter-share-button" data-via="ziaxdk"
-                                        data-hashtags="zlapser">Tweet</a>
-                <script>!function (d, s, id) {
-                    var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https';
-                    if (!d.getElementById(id)) {
-                        js = d.createElement(s);
-                        js.id = id;
-                        js.src = p + '://platform.twitter.com/widgets.js';
-                        fjs.parentNode.insertBefore(js, fjs);
-                    }
-                }(document, 'script', 'twitter-wjs');</script>
-
-
-                <iframe src="//www.facebook.com/plugins/like.php?href=http%3A%2F%2Fwww.zlapser.net&amp;send=false&amp;layout=button_count&amp;width=450&amp;show_faces=true&amp;font&amp;colorscheme=light&amp;action=like&amp;height=21&amp;appId=273860242666552"
-                        scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:80px; height:21px;"
-                        allowTransparency="true"></iframe>
-
-            </div>
         </div>
     </div>
     <footer>
@@ -55,7 +37,7 @@
                                                                                               class="icon-spinner icon-spin"></i>
         </p>
 
-        <div class="alert alert-error" ng-hide="job.isPi">
+        <div class="alert alert-error" ng-hide="!job.isPi">
             <button type="button" class="close" data-dismiss="alert">&times;</button>
             <strong>Ups!</strong> This can only be runned on a Rasperry pi
         </div>
@@ -96,11 +78,7 @@
 
         </p>
 
-        <div class="text-center">
-            <iframe width="680" height="480" src="http://www.youtube.com/embed/-89zWoQHKok" frameborder="0"
-                    allowfullscreen></iframe>
-            <h5>250 frame / 10 final / 25fps / ffmpeg -r 25 -i img_%04d.jpg -vcodec libx264 movie.mp4</h5>
-
+        <div class="text-center" ng-include src="iframes">
         </div>
     </div>
 </script>
@@ -244,6 +222,17 @@
         </ul>
     </div>
 </script>
+
+<script type="text/ng-template" id="youtube1.tmpl">
+    <iframe width="680" height="480" src="http://www.youtube.com/embed/-89zWoQHKok" frameborder="0"
+            allowfullscreen></iframe>
+    <h5>250 frame / 10 final / 25fps / ffmpeg -r 25 -i img_%04d.jpg -vcodec libx264 movie.mp4</h5>
+    <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://www.zlapser.net" data-text="ZLasper - Timelapse for your DSLR"  data-via="ziaxdk"
+       data-hashtags="zlapser">Tweet</a>
+    <iframe src="//www.facebook.com/plugins/like.php?href=http%3A%2F%2Fwww.zlapser.net&amp;send=false&amp;layout=button_count&amp;width=450&amp;show_faces=true&amp;font&amp;colorscheme=light&amp;action=like&amp;height=21&amp;appId=273860242666552"
+    scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:80px; height:21px;"
+    allowTransparency="true"></iframe>
+</script>
 <script src="js/jquery-1.9.1.min.js" type="text/javascript"></script>
 <script src="js/angular.js" type="text/javascript"></script>
 <script src="js/bootstrap.js" type="text/javascript"></script>
@@ -267,6 +256,6 @@
     ga('send', 'pageview');
 
 </script>
-
+<script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
 </body>
 </html>

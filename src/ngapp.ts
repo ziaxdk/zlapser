@@ -29,8 +29,13 @@ angular.module('app', [], function ($routeProvider:ng.IRouteProvider) {
             $location.path(url);
         };
 
+        $rootScope.iframes = '';
         $rootScope.job = {
         };
+
+        $rootScope.$watch('job.isPi', (n,o)=>{
+             if (!n) $rootScope.iframes = "youtube1.tmpl";
+        });
 
         //$rootScope.model = model;
 

@@ -77,7 +77,16 @@ fs.exists("/sys/class/gpio", function (exists) {
     model.setScript(exists);
 });
 app.configure('development', function () {
+    io.set('transports', [
+        'websocket', 
+        'flashsocket', 
+        'htmlfile', 
+        'xhr-polling', 
+        'jsonp-polling'
+    ]);
     io.set('log level', 1);
+    io.enable('browser client minification');
+    io.enable('browser client etag');
     console.log("configure development");
 });
 app.configure('production', function () {
@@ -87,6 +96,8 @@ app.configure('production', function () {
     io.set("polling duration", 10);
     io.set('log level', 1);
     io.enable('browser client minification');
+    io.enable('browser client etag');
+    io.enable('browser client gzip');
     console.log("configure production");
 });
 app.use(express.static(__dirname + "/src"));

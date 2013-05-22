@@ -163,12 +163,14 @@ For an open network with no security enter this:
     driver=nl80211
     ssid=www.zlapser.net        # SSID of network
     hw_mode=g
-    channel=6
+    channel=1
     auth_algs=1
     wmm_enabled=0
+    beacon_int=100
 
-To enable a secure network add this with the above:
+To enable a secure network add/change this with the above:
 
+    auth_algs=3
     wpa=2
     wpa_passphrase=zlapser!     # MUST be at least 8 characters
     wpa_key_mgmt=WPA-PSK
@@ -194,7 +196,32 @@ Run it as a service and start dhcp as a service
 
 NOw you should be able to connect to the pi access point. :-)
 
+### Boot
 
+Create the startup script for node/zlapser server:
+
+    $ sudo nano /etc/init.d/zlapserd
+
+And use this:
+
+    #! /bin/sh
+    #
+    ### BEGIN INIT INFO
+    # Provides:          zlapserd
+    # Required-Start:    $remote_fs $syslog
+    # Required-Stop:     $remote_fs $syslog
+    # Default-Start:     2 3 4 5
+    # Default-Stop:      0 1 6
+    # Short-Description: Start node server with ZLapser
+    ### END INIT INFO
+
+
+
+To get everything up and running, when booting the pi, use:
+
+    $ sudo update-rc.d hostapd enable
+    $ sudo update-rc.d udhcpd enable
+    $ sudo update-rc.d zlapserd
 
 
 ## Browser support
