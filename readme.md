@@ -194,7 +194,15 @@ Run it as a service and start dhcp as a service
     $ sudo service hostapd start
     $ sudo service udhcpd start
 
-NOw you should be able to connect to the pi access point. :-)
+Now you should be able to connect to the pi access point. :-)
+
+###Problem!!!
+According to [this](http://raspberrytank.ianrenton.com/day-22-i-occidentally-a-whole-access-point/) blog,
+sometimes the hostapd daemon erases the wlan0 ip address, which causes the udhcpd daemon not to start. I inserted the line:
+
+    ifconfig wlan 10.11.12.13 netmask 255.255.255.128
+
+in the /etc/init.d/hostapd config file in the "start)" right before ";;", and the problem disappears.
 
 ### Boot
 
@@ -215,13 +223,30 @@ And use this:
     # Short-Description: Start node server with ZLapser
     ### END INIT INFO
 
+    NAME=node
+    NODE_OPTS=server.js
+    DESC="node - ZLapser site"
 
+    case "$1" in
+      start)
+            echo -n "Starting $DESC: "
+            sudo /usr/local/bin/node /home/pi/zlapser-1.0/server.js > /var/log/node &
+            echo "$NAME."
+            ;;
+      stop)
+            echo -n "Stopping $DESC: "
+            sudo killall node
+            echo "$NAME."
+            ;;
+    esac
+
+    exit 0
 
 To get everything up and running, when booting the pi, use:
 
     $ sudo update-rc.d hostapd enable
     $ sudo update-rc.d udhcpd enable
-    $ sudo update-rc.d zlapserd
+    $ sudo update-rc.d zlapserd enable
 
 
 ## Browser support
